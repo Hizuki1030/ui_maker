@@ -43,9 +43,8 @@ class Uimaker(tkinter.Frame):
         self.object_list = tkinter.Listbox(self, listvariable=object_tags,width=28, height=15)
         self.object_list.grid(row=1,column=3,columnspan=2,rowspan=2)
 
-        self.test_canvas = tkinter.Canvas(self, bg='white', width=320, height=240)
-        print(self.test_canvas)
-        self.test_canvas.grid(row=1, column=1, columnspan=2,rowspan=4)
+        self.canvas = tkinter.Canvas(self, bg='white', width=320, height=240)
+        self.canvas.grid(row=1, column=1, columnspan=2,rowspan=4)
         """self.test_canvas.bind('<B1-Motion>', self.draft)
         self.test_canvas.bind('<B1-Motion>',self.mouse_coordinate_viewer,"+")
         self.test_canvas.bind('<ButtonRelease-1>', self.draw)
@@ -58,13 +57,59 @@ class Uimaker(tkinter.Frame):
     def drawRectangle(self):
         return 0
 
-    
+
 
     def Canvas_reset(self):
         return 0
 
     def Delete_componets(self):
         return 0
+
+    def export_canvas_components(self):
+        Canvas_data={}
+        component={}
+        for id in canvas.find_all():
+            image=""
+            text=""
+            fillColor=""
+            outlineColor=""
+            type = canvas.type(id)
+
+
+            tag = canvas.itemcget(id,"tags")
+            coordinate=canvas.coords(id)
+
+            component["tag"]= tag
+            component["coordinate"] = coordinate
+            component["layer"]=layer[id]
+
+            if(type=="line"):
+                fillColor = canvas.itemcget(id,"fill")
+                component["lineColor"]=fillColor
+
+            #line or rectangle or triangleが塗りつぶしなのかどうか~~~~~
+            #塗りつぶしなら、typeの前にfillを付ける
+            elif(type=="rectangle" or type == "triangle" or type == "oval"):
+                type = type[0].upper()+type[1:]#一番最初の文字を大文字に
+                fillColor = canvas.itemcget(id,"fill")
+                if(fillColor != ""):
+                    component["fillColor"]= fillColor
+                    type="fill"+type
+                outlineColor = canvas.itemcget(id,"outline")
+                if(outlineColor != ""):
+                    component["outlineColor"]=outlineColor
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            elif(type=="text"):
+                text = canvas.itemcget(id,"text")
+            elif(type=="image"):
+                image = canvas.itemcget(id,"image")
+
+            component["type"]= type
+
+            print(type,fillColor,coordinate,layer[id])
+
+            Canvas_data[id]=component
+        return Canvas_data
 
 
 root = tkinter.Tk()
