@@ -1,6 +1,7 @@
 import tkinter
 
 class Uimaker(tkinter.Frame):
+    layer={}　#描画する度にレイヤー辞書にidとレイヤーをいれてい置く
 
     def __init__(self, master=None):
         super().__init__(master)
@@ -101,6 +102,9 @@ class Uimaker(tkinter.Frame):
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             elif(type=="text"):
                 text = canvas.itemcget(id,"text")
+                fillColor = canvas.itemcget(id,"fg")
+                component["text"]=text
+                component["fillColor"]=fillColor
             elif(type=="image"):
                 image = canvas.itemcget(id,"image")
 
