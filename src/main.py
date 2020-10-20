@@ -1,10 +1,8 @@
 import tkinter
 import database_manage
 
-target_file=database_manage.Database_manage(r"C:\Users\81909\Documents\python\ui_maker\src\components_test.xml")
-
 class Uimaker(tkinter.Frame):
-    layer={}#描画する度にレイヤー辞書にidとレイヤーをいれてい置く
+
 
     def __init__(self, master=None):
         super().__init__(master)
@@ -16,7 +14,19 @@ class Uimaker(tkinter.Frame):
         #self.preview("line","black")
 
     def setup(self):
-        pass
+
+        self.preview_flag=False
+        self.id=None
+        self.initial_x=None
+        self.initail_y=None
+        self.final_x=None
+        self.final_y=None
+        self.preview_mode=None
+
+        self.layer={}#描画する度にレイヤー辞書にidとレイヤーをいれてい置く
+
+
+
 
     def create_widgets(self):
         self.draw_line_button = tkinter.Button(self, text='drawline',command = self.drawLine)#直線描画ツール
@@ -48,11 +58,9 @@ class Uimaker(tkinter.Frame):
         self.object_list = tkinter.Listbox(self, listvariable=object_tags,width=28, height=15)
         self.object_list.grid(row=1,column=3,columnspan=2,rowspan=2)
 
-        self.canvas = tkinter.Canvas(self, bg='white', width=320, height=240)
-        self.canvas.grid(row=1, column=1, columnspan=2,rowspan=4)
-        #self.test_canvas.bind('<B1-Motion>', self.draft)
-        #self.test_canvas.bind('<B1-Motion>',self.mouse_coordinate_viewer,"+")
-        #self.test_canvas.bind('<ButtonRelease-1>', self.draw)
+        self.make_canvas()
+        self.canvas.bind('<B1-Motion>', self.preview)
+        self.canvas.bind('<ButtonRelease>', self.draw)
         self.canvas.bind('<Motion>',self.set_mouse_coordinate)
         #self.object_list.bind('<Double-1>',  self.object_property)
 
@@ -62,10 +70,11 @@ class Uimaker(tkinter.Frame):
 #   def drawLine(self):
 #        return 0
     def drawLine(self):
+        self.preview_mode="line"
         return 0
 
     def drawRectangle(self):
-        return 0
+        self.preview_mode="Rectangle"
     def fillRectangle(self):
         return 0
     def drawOval(self):
@@ -80,20 +89,55 @@ class Uimaker(tkinter.Frame):
         return 0
     def drawPicture(self):
         return 0
-    def drawRectangle(self):
-        return 0
 
 #～～～～～～～～～～～～～～～～～～～～～～～
+    def make_canvas(self):
+        self.canvas = tkinter.Canvas(self, bg='white', width=320, height=240)
+        self.canvas.grid(row=1, column=1, columnspan=2,rowspan=4)
 
-    def preview(self,type,color):
-        if(type=="line"):
-            self.canvas.create_line(0,0,100,100)
+    def preview(self,event):
+        if(self.preview_mode=="line"):
+            if(self.preview_flag==False):
+                self.preview_flag=True
+                self.initial_x = event.x
+                self.initial_y = event.y
+                self.id=self.canvas.create_line(self.initial_x,self.initial_y,self.initial_x+1,self.initial_y+1,width=1,dash=1,fill='#FF4500')#初期のid作成のために
+            else:
+                self.final_x=event.x
+                self.final_y=event.y
+                self.canvas.delete(self.id)
+                self.id=self.canvas.create_line(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,fill='#FF4500')
+        elif(self.preview_mode=="Rectangle"):
+            if(self.preview_flag==False):
+                self.preview_flag=True
+                self.initial_x = event.x
+                self.initial_y = event.y
+                self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.initial_x+1,self.initial_y+1,width=1,dash=1,fill='#FF4500')#初期のid作成のために
+            else:
+                self.final_x=event.x
+                self.final_y=event.y
+                self.canvas.delete(self.id)
+                self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,outline='#FF4500')
+#~~~~~~~~~クリックを離すとdrawが呼ばれるようになっている~~~~~~~~~~
+
+    def draw(self,event):
+        if(self.preview_flag==True):
+            self.canvas.delete(self.id)
+            if(self.preview_mode == "line"):
+                self.id=self.canvas.create_line(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1)
+            elif(self.preview_mode == "Rectangle"):
+                self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1)
+            self.layer[self.id]="1"
+            self.preview_flag=False
+
+
+
 
     def Canvas_reset(self):
         return 0
 
     def Delete_componets(self):
-        return 0
+        self.export_xmlfile()
 
     def set_mouse_coordinate(self,event):
         mouse_X=event.x
@@ -109,57 +153,59 @@ class Uimaker(tkinter.Frame):
 
 
     def export_xmlfile(self):
+        target_Database=database_manage.Database_manage(r"C:\Users\81909\Documents\python\ui_maker\src\components_test.xml")
         Canvas_data= self.export_canvas_components()
-        target_file=export_Database_as_xml(b)
+        target_Database.export_Database_as_xml(Canvas_data)
 
 
     def export_canvas_components(self):
         Canvas_data={}
-        component={}
-        for id in canvas.find_all():
+        for id in self.canvas.find_all():
+            component={}
             image=""
             text=""
             fillColor=""
             outlineColor=""
-            type = canvas.type(id)
+            type = self.canvas.type(id)
 
 
-            tag = canvas.itemcget(id,"tags")
-            coordinate=canvas.coords(id)
+            tag = self.canvas.itemcget(id,"tags")
+            coordinate=self.canvas.coords(id)
 
             component["tag"]= tag
             component["coordinate"] = coordinate
-            component["layer"]=layer[id]
+            component["layer"]=self.layer[id]
 
             if(type=="line"):
-                fillColor = canvas.itemcget(id,"fill")
+                fillColor = self.canvas.itemcget(id,"fill")
                 component["lineColor"]=fillColor
 
             #line or rectangle or triangleが塗りつぶしなのかどうか~~~~~
             #塗りつぶしなら、typeの前にfillを付ける
             elif(type=="rectangle" or type == "triangle" or type == "oval"):
                 type = type[0].upper()+type[1:]#一番最初の文字を大文字に
-                fillColor = canvas.itemcget(id,"fill")
+                fillColor = self.canvas.itemcget(id,"fill")
                 if(fillColor != ""):
                     component["fillColor"]= fillColor
                     type="fill"+type
-                outlineColor = canvas.itemcget(id,"outline")
+                outlineColor = self.canvas.itemcget(id,"outline")
                 if(outlineColor != ""):
                     component["outlineColor"]=outlineColor
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             elif(type=="text"):
-                text = canvas.itemcget(id,"text")
-                fillColor = canvas.itemcget(id,"fg")
+                text = self.canvas.itemcget(id,"text")
+                fillColor = self.canvas.itemcget(id,"fg")
                 component["text"]=text
                 component["fillColor"]=fillColor
             elif(type=="image"):
-                image = canvas.itemcget(id,"image")
+                image = self.canvas.itemcget(id,"image")
 
             component["type"]= type
 
-            print(type,fillColor,coordinate,layer[id])
+
 
             Canvas_data[id]=component
+
         return Canvas_data
 
 
