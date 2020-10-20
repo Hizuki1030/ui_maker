@@ -43,14 +43,14 @@ class Database_manage:
         code=[] #
         if(type=="drawLine" or type == "drawRectangle" or type == "fillRectangle" or type == "drawOval" or type == "fillOval"):
             code.append(layer)
-            x0=coordinate_data[0][0]
+            x0=coordinate_data[0][0]#座標データの呼び出し((x0,y0)(x1,y1),,,,,,,)
             y0=coordinate_data[0][1]
             x1=coordinate_data[1][0]
             y1=coordinate_data[1][1]
             code.append(self.Libray[Libray_name][type]+"("+str(x0)+","+str(y0)+","+str(x1)+","+str(y1)+","+str(color)+");"+"//"+str(name))
         elif(type== "Triangle" or type=="fillTriangle"):
             code.append(layer)
-            x0=coordinate_data[0][0]
+            x0=coordinate_data[0][0]#座標データの呼び出し((x0,y0)(x1,y1),,,,,,,)
             y0=coordinate_data[0][1]
             x1=coordinate_data[1][0]
             y1=coordinate_data[1][1]
@@ -59,12 +59,12 @@ class Database_manage:
             code.append(self.Libray[Libray_name][type]+"("+str(x0)+","+str(y0)+","+str(x1)+","+str(y1)+","+str(x2)+","+str(y2)+","+str(color)+");"+"//"+str(name))
         elif(type== "text"):
             code.append(layer)
-            x0=coordinate_data[0]
+            x0=coordinate_data[0]#座標データの呼び出し((x0,y0)(x1,y1),,,,,,,)
             y0=coordinate_data[1]
             code.append(self.Libray[Libray_name][type]+"("+str(string)+","+str(x0)+","+str(y0)+");"+"//"+str(name))
         elif(type== "image"):
             code.append(layer)
-            x0=coordinate_data[0]
+            x0=coordinate_data[0]#座標データの呼び出し((x0,y0)(x1,y1),,,,,,,)
             y0=coordinate_data[1]
             code.append(self.Libray[Libray_name][type]+"("+str(string)+","+str(x0)+","+str(y0)+");"+"//"+str(name))
 

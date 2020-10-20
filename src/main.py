@@ -1,7 +1,10 @@
 import tkinter
+import database_manage
+
+target_file=database_manage.Database_manage(r"C:\Users\81909\Documents\python\ui_maker\src\components_test.xml")
 
 class Uimaker(tkinter.Frame):
-    layer={}　#描画する度にレイヤー辞書にidとレイヤーをいれてい置く
+    layer={}#描画する度にレイヤー辞書にidとレイヤーをいれてい置く
 
     def __init__(self, master=None):
         super().__init__(master)
@@ -10,6 +13,7 @@ class Uimaker(tkinter.Frame):
         self.pack()
         self.setup()
         self.create_widgets()
+        #self.preview("line","black")
 
     def setup(self):
         pass
@@ -34,9 +38,9 @@ class Uimaker(tkinter.Frame):
         self.line_width_entry.grid(row=0,column=4)
         self.line_width_entry.insert(tkinter.END,"1")
 
-        self.mouse_coordinate_label_text=tkinter.StringVar()
-        self.mouse_coordinate_label_text.set("x,y")
-        self.mouse_coordinate_label=tkinter.Label(self,textvariable=self.mouse_coordinate_label_text)
+        self.label_mouse_coordinate=tkinter.StringVar()
+
+        self.mouse_coordinate_label=tkinter.Label(self,textvariable=self.label_mouse_coordinate)
         self.mouse_coordinate_label.grid(row=0, column=0)
         object_tags=[]
         list_object_id_string=tkinter.StringVar(value=self)
@@ -46,25 +50,68 @@ class Uimaker(tkinter.Frame):
 
         self.canvas = tkinter.Canvas(self, bg='white', width=320, height=240)
         self.canvas.grid(row=1, column=1, columnspan=2,rowspan=4)
-        """self.test_canvas.bind('<B1-Motion>', self.draft)
-        self.test_canvas.bind('<B1-Motion>',self.mouse_coordinate_viewer,"+")
-        self.test_canvas.bind('<ButtonRelease-1>', self.draw)
-        self.test_canvas.bind('<Motion>',self.mouse_coordinate_viewer)
-        self.object_list.bind('<Double-1>',  self.object_property)"""
+        #self.test_canvas.bind('<B1-Motion>', self.draft)
+        #self.test_canvas.bind('<B1-Motion>',self.mouse_coordinate_viewer,"+")
+        #self.test_canvas.bind('<ButtonRelease-1>', self.draw)
+        self.canvas.bind('<Motion>',self.set_mouse_coordinate)
+        #self.object_list.bind('<Double-1>',  self.object_property)
 
+
+
+#描画ツール
+#   def drawLine(self):
+#        return 0
     def drawLine(self):
-        print("")
+        return 0
 
     def drawRectangle(self):
         return 0
+    def fillRectangle(self):
+        return 0
+    def drawOval(self):
+        return 0
+    def fillOval(self):
+        return 0
+    def drawTriangle(self):
+        return 0
+    def fillTriangle(self):
+        return 0
+    def drawText(self):
+        return 0
+    def drawPicture(self):
+        return 0
+    def drawRectangle(self):
+        return 0
 
+#～～～～～～～～～～～～～～～～～～～～～～～
 
+    def preview(self,type,color):
+        if(type=="line"):
+            self.canvas.create_line(0,0,100,100)
 
     def Canvas_reset(self):
         return 0
 
     def Delete_componets(self):
         return 0
+
+    def set_mouse_coordinate(self,event):
+        mouse_X=event.x
+        mouse_Y=event.y
+        coordinate = str(event.x)+","+str(event.y)
+        self.label_mouse_coordinate.set(coordinate)
+
+    def get_mouse_coordinate(self,event):
+        coordinate=[]
+        coordinate.append(event.x)
+        coordinate.append(event.y)
+        return coordinate
+
+
+    def export_xmlfile(self):
+        Canvas_data= self.export_canvas_components()
+        target_file=export_Database_as_xml(b)
+
 
     def export_canvas_components(self):
         Canvas_data={}
