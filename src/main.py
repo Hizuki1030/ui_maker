@@ -8,7 +8,7 @@ class Uimaker(tkinter.Frame):
         super().__init__(master)
         self.master = master
         self.master.title('UI maker')
-        self.pack()
+        self.grid()
         self.setup()
         self.create_widgets()
         #self.preview("line","black")
@@ -25,40 +25,42 @@ class Uimaker(tkinter.Frame):
 
         self.layer={}#描画する度にレイヤー辞書にidとレイヤーをいれてい置く
 
+        self.label_mouse_coordinate=tkinter.StringVar()
+
 
 
 
     def create_widgets(self):
-        self.draw_line_button = tkinter.Button(self, text='drawline',command = self.drawLine)#直線描画ツール
-        self.draw_line_button.grid(row=1, column=0)
-
-        self.draw_rectangle_button = tkinter.Button(self, text='draw rect',command = self.drawRectangle )#長方形描画ツール（塗りつぶしなし）
-        self.draw_rectangle_button.grid(row=2, column=0)
-
-        self.clear_button = tkinter.Button(self, text='clear all',command= self.Canvas_reset)#キャンバスリセット
-        self.clear_button.grid(row=0, column=1)
-
-        self.delete_object_button = tkinter.Button(self, text='delete_object', command = self.Delete_componets)#消去ボタン
-        self.delete_object_button.grid(row=0, column=2)
-
-        self.line_width_label= tkinter.Label(self,text="太さ")
-        self.line_width_label.grid(row=0,column=3)
-
-        self.line_width_entry = tkinter.Entry(self,width=20)
-        self.line_width_entry.grid(row=0,column=4)
-        self.line_width_entry.insert(tkinter.END,"1")
-
-        self.label_mouse_coordinate=tkinter.StringVar()
+        self.make_canvas()
 
         self.mouse_coordinate_label=tkinter.Label(self,textvariable=self.label_mouse_coordinate)
-        self.mouse_coordinate_label.grid(row=0, column=0)
+        self.mouse_coordinate_label.grid(row=0, column=0,columnspan=1,rowspan=1)
         object_tags=[]
         list_object_id_string=tkinter.StringVar(value=self)
         #object_tags=[x[0] for x in self.object_coordinate_datas]
         self.object_list = tkinter.Listbox(self, listvariable=object_tags,width=28, height=15)
-        self.object_list.grid(row=1,column=3,columnspan=2,rowspan=2)
+        self.object_list.grid(row=1,column=3,columnspan=1,rowspan=3)
 
-        self.make_canvas()
+        self.draw_line_button = tkinter.Button(self, text='drawline',command = self.drawLine)#直線描画ツール
+        self.draw_line_button.grid(row=1, column=0,columnspan=1,rowspan=1)
+
+        self.draw_rectangle_button = tkinter.Button(self, text='draw rect',command = self.drawRectangle )#長方形描画ツール（塗りつぶしなし）
+        self.draw_rectangle_button.grid(row=3, column=0,columnspan=1,rowspan=1)
+
+        self.draw_oval_button = tkinter.Button(self, text='draw oval',command = self.drawOval )#長方形描画ツール（塗りつぶしなし）
+        self.draw_oval_button.grid(row=2, column=0,columnspan=1,rowspan=1)
+
+        self.clear_button = tkinter.Button(self, text='clear all',command= self.Canvas_reset)#キャンバスリセット
+        self.clear_button.grid(row=0, column=1,columnspan=1,rowspan=1)
+
+        self.delete_object_button = tkinter.Button(self, text='delete_object', command = self.Delete_componets)#消去ボタン
+        self.delete_object_button.grid(row=0, column=2,columnspan=1,rowspan=1)
+
+
+
+
+
+
         self.canvas.bind('<B1-Motion>', self.preview)
         self.canvas.bind('<ButtonRelease>', self.draw)
         self.canvas.bind('<Motion>',self.set_mouse_coordinate)
@@ -70,7 +72,7 @@ class Uimaker(tkinter.Frame):
 #   def drawLine(self):
 #        return 0
     def drawLine(self):
-        self.preview_mode="line"
+        self.preview_mode="Line"
         return 0
 
     def drawRectangle(self):
@@ -78,7 +80,7 @@ class Uimaker(tkinter.Frame):
     def fillRectangle(self):
         return 0
     def drawOval(self):
-        return 0
+        self.preview_mode="Oval"
     def fillOval(self):
         return 0
     def drawTriangle(self):
@@ -93,10 +95,10 @@ class Uimaker(tkinter.Frame):
 #～～～～～～～～～～～～～～～～～～～～～～～
     def make_canvas(self):
         self.canvas = tkinter.Canvas(self, bg='white', width=320, height=240)
-        self.canvas.grid(row=1, column=1, columnspan=2,rowspan=4)
+        self.canvas.grid(row=1, column=1, columnspan=2,rowspan=3)
 
     def preview(self,event):
-        if(self.preview_mode=="line"):
+        if(self.preview_mode=="Line"):
             if(self.preview_flag==False):
                 self.preview_flag=True
                 self.initial_x = event.x
@@ -118,15 +120,30 @@ class Uimaker(tkinter.Frame):
                 self.final_y=event.y
                 self.canvas.delete(self.id)
                 self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,outline='#FF4500')
-#~~~~~~~~~クリックを離すとdrawが呼ばれるようになっている~~~~~~~~~~
+
+        elif(self.preview_mode=="Oval"):
+            if(self.preview_flag==False):
+                self.preview_flag=True
+                self.initial_x = event.x
+                self.initial_y = event.y
+                self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.initial_x+1,self.initial_y+1,width=1,dash=1,fill='#FF4500')#初期のid作成のために
+            else:
+                self.final_x=event.x
+                self.final_y=event.y
+                self.canvas.delete(self.id)
+                self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,outline='#FF4500')
+
+        #~~~~~~~~~クリックを離すとdrawが呼ばれるようになっている~~~~~~~~~~
 
     def draw(self,event):
         if(self.preview_flag==True):
             self.canvas.delete(self.id)
-            if(self.preview_mode == "line"):
+            if(self.preview_mode == "Line"):
                 self.id=self.canvas.create_line(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1)
             elif(self.preview_mode == "Rectangle"):
                 self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1)
+            elif(self.preview_mode == "Oval"):
+                self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1)
             self.layer[self.id]="1"
             self.preview_flag=False
 
