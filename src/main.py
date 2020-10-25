@@ -1,5 +1,6 @@
 import tkinter
 import database_manage
+import numpy as np
 
 class Uimaker(tkinter.Frame):
 
@@ -22,6 +23,8 @@ class Uimaker(tkinter.Frame):
         self.final_x=None
         self.final_y=None
         self.preview_mode=None
+        self.minimum_pixelX=30
+        self.minimum_pixelY=30
 
         self.layer={}#描画する度にレイヤー辞書にidとレイヤーをいれてい置く
 
@@ -31,7 +34,7 @@ class Uimaker(tkinter.Frame):
 
 
     def create_widgets(self):
-        self.make_canvas()
+        self.make_canvas(320,240)
 
         self.mouse_coordinate_label=tkinter.Label(self,textvariable=self.label_mouse_coordinate)
         self.mouse_coordinate_label.grid(row=0, column=0,columnspan=1,rowspan=1)
@@ -55,6 +58,10 @@ class Uimaker(tkinter.Frame):
 
         self.delete_object_button = tkinter.Button(self, text='delete_object', command = self.Delete_componets)#消去ボタン
         self.delete_object_button.grid(row=0, column=2,columnspan=1,rowspan=1)
+
+        self.export_button = tkinter.Button(self, text='save', command = self.export_xmlfile)#消去ボタン
+        self.export_button.grid(row=0, column=3,columnspan=1,rowspan=1)
+
 
 
 
@@ -93,43 +100,45 @@ class Uimaker(tkinter.Frame):
         return 0
 
 #～～～～～～～～～～～～～～～～～～～～～～～
-    def make_canvas(self):
-        self.canvas = tkinter.Canvas(self, bg='white', width=320, height=240)
+    def make_canvas(self,Width,Height):
+        self.width=Width
+        self.height=Height
+        self.canvas = tkinter.Canvas(self, bg='white', width=Width, height=Height)
         self.canvas.grid(row=1, column=1, columnspan=2,rowspan=3)
 
     def preview(self,event):
         if(self.preview_mode=="Line"):
             if(self.preview_flag==False):
                 self.preview_flag=True
-                self.initial_x = event.x
-                self.initial_y = event.y
+                self.initial_x = self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
+                self.initial_y = self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.id=self.canvas.create_line(self.initial_x,self.initial_y,self.initial_x+1,self.initial_y+1,width=1,dash=1,fill='#FF4500')#初期のid作成のために
             else:
-                self.final_x=event.x
-                self.final_y=event.y
+                self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
+                self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.canvas.delete(self.id)
                 self.id=self.canvas.create_line(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,fill='#FF4500')
         elif(self.preview_mode=="Rectangle"):
             if(self.preview_flag==False):
                 self.preview_flag=True
-                self.initial_x = event.x
-                self.initial_y = event.y
+                self.initial_x = self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
+                self.initial_y = self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.initial_x+1,self.initial_y+1,width=1,dash=1,fill='#FF4500')#初期のid作成のために
             else:
-                self.final_x=event.x
-                self.final_y=event.y
+                self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
+                self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.canvas.delete(self.id)
                 self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,outline='#FF4500')
 
         elif(self.preview_mode=="Oval"):
             if(self.preview_flag==False):
                 self.preview_flag=True
-                self.initial_x = event.x
-                self.initial_y = event.y
+                self.initial_x = self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
+                self.initial_y = self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.initial_x+1,self.initial_y+1,width=1,dash=1,fill='#FF4500')#初期のid作成のために
             else:
-                self.final_x=event.x
-                self.final_y=event.y
+                self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
+                self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.canvas.delete(self.id)
                 self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,outline='#FF4500')
 
@@ -154,25 +163,19 @@ class Uimaker(tkinter.Frame):
         return 0
 
     def Delete_componets(self):
-        self.export_xmlfile()
-
+        return 0
     def set_mouse_coordinate(self,event):
         mouse_X=event.x
         mouse_Y=event.y
         coordinate = str(event.x)+","+str(event.y)
         self.label_mouse_coordinate.set(coordinate)
 
-    def get_mouse_coordinate(self,event):
-        coordinate=[]
-        coordinate.append(event.x)
-        coordinate.append(event.y)
-        return coordinate
-
-
     def export_xmlfile(self):
         target_Database=database_manage.Database_manage(r"C:\Users\81909\Documents\python\ui_maker\src\components_test.xml")
         Canvas_data= self.export_canvas_components()
         target_Database.export_Database_as_xml(Canvas_data)
+        for i in target_Database.get_UiCode("m5stack"):
+            print(i)
 
 
     def export_canvas_components(self):
@@ -225,6 +228,29 @@ class Uimaker(tkinter.Frame):
 
         return Canvas_data
 
+    def change_nearestCoordinateX(self,coordinate,minimum_pixel):#minimum_pixelを最小単位として指定する座標を選択する
+        coodinate=0
+        if(coordinate > self.width):
+            coordinate=self.width
+        elif(coordinate < 0):
+            coordinate=0
+        else:
+            x=np.arange(0,self.width+minimum_pixel,minimum_pixel)
+            index=int(coordinate/minimum_pixel)
+            coordinate =  x[index]
+        return coordinate
+
+    def change_nearestCoordinateY(self,coordinate,minimum_pixel):#minimum_pixelを最小単位として指定する座標を選択する
+        coodinate = 0
+        if(coordinate > self.height):
+            coordinate=self.height
+        elif(coordinate < 0):
+            coordinate=0
+        else:
+            y=np.arange(0,self.height+minimum_pixel,minimum_pixel)
+            index=int(coordinate/minimum_pixel)
+            coordinate = y[index]
+        return coordinate
 
 root = tkinter.Tk()
 app = Uimaker(master=root)
