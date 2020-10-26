@@ -15,8 +15,9 @@ class Database_manage:
         for id in components.keys():#{id:{"tag":__,"type":__,,,,,,,,,}}
             component=components[id]
             type=component["type"]
-            print(type)
-            coordinate=[str(x) for x in component["coordinate"]]#配列をstrにキャスト
+            coordinate=[int(x) for x in component["coordinate"]]#float配列をintにキャスト
+            print(coordinate)
+            coordinate=[str(x) for x in coordinate]#int配列をstrにキャスト
             if(type=="line"):
                 ET.SubElement(components_element,type,{"tag":component["tag"], "ID":str(id), "color":component["lineColor"], "x0":coordinate[0], "y0":coordinate[1], "x1":coordinate[2], "y1":coordinate[3], "layer":str(component["layer"])})
                 #ET.SubElement(components,"Line",{"tag":"line1", "ID":"001", "color":"black", "x0":"0", "y0":"0", "x1":"0", "y1":"10", "layer":"1"})
@@ -41,13 +42,34 @@ class Database_manage:
 
     def make_command(self,Libray_name,type,name,color,coordinate_data,layer,string):#coordinateは配列で代入（引数の数が可変にならないようにするため）
         code=[] #
-        if(type=="drawLine" or type == "drawRectangle" or type == "fillRectangle" or type == "drawOval" or type == "fillOval"):
+        color=self.colorChange_hex6_to_hex4(color)
+        if(type=="drawLine"):
             code.append(layer)
             x0=coordinate_data[0][0]#座標データの呼び出し((x0,y0)(x1,y1),,,,,,,)
             y0=coordinate_data[0][1]
             x1=coordinate_data[1][0]
             y1=coordinate_data[1][1]
             code.append(self.Libray[Libray_name][type]+"("+str(x0)+","+str(y0)+","+str(x1)+","+str(y1)+","+str(color)+");"+"//"+str(name))
+        elif(type == "drawRectangle" or type == "fillRectangle" ):
+            code.append(layer)
+            x0=coordinate_data[0][0]#座標データの呼び出し((x0,y0)(x1,y1),,,,,,,)
+            y0=coordinate_data[0][1]
+            x1=coordinate_data[1][0]
+            y1=coordinate_data[1][1]
+            w=int(x1)-int(x0)
+            h=int(y1)-int(y0)
+            code.append(self.Libray[Libray_name][type]+"("+str(x0)+","+str(y0)+","+str(w)+","+str(h)+","+str(color)+");"+"//"+str(name))
+        elif( type == "drawOval" or type == "fillOval"):
+            code.append(layer)
+            x0=coordinate_data[0][0]#座標データの呼び出し((x0,y0)(x1,y1),,,,,,,)
+            y0=coordinate_data[0][1]
+            x1=coordinate_data[1][0]
+            y1=coordinate_data[1][1]
+            rx=(int(x1)-int(x0))/2
+            ry=(int(y1)-int(y0))/2
+            Xcenter=int(x0)+rx
+            Ycenter=int(y0)+ry
+            code.append(self.Libray[Libray_name][type]+"("+str(Xcenter)+","+str(Ycenter)+","+str(rx)+","+str(ry)+","+str(color)+");"+"//"+str(name))
         elif(type== "Triangle" or type=="fillTriangle"):
             code.append(layer)
             x0=coordinate_data[0][0]#座標データの呼び出し((x0,y0)(x1,y1),,,,,,,)
@@ -118,3 +140,13 @@ class Database_manage:
         code=[x[1] for x in LayerANDcode]
         print(LayerANDcode)
         return code
+
+    def colorChange_hex6_to_hex4(self,value):
+        value = value.lstrip('#')
+        lv = len(value)
+        RGB=tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))#(x,x,x)
+        red=int(RGB[0])
+        green = int(RGB[1])
+        blue= int(RGB[2])
+        hex4= hex(((red>>3)<<11) | ((green>>2)<<5) | (blue>>3))
+        return hex4

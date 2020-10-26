@@ -1,4 +1,5 @@
 import tkinter
+from tkinter import colorchooser
 import database_manage
 import numpy as np
 
@@ -23,12 +24,15 @@ class Uimaker(tkinter.Frame):
         self.final_x=None
         self.final_y=None
         self.preview_mode=None
-        self.minimum_pixelX=30
-        self.minimum_pixelY=30
+        self.minimum_pixelX=10
+        self.minimum_pixelY=10
 
         self.layer={}#描画する度にレイヤー辞書にidとレイヤーをいれてい置く
 
         self.label_mouse_coordinate=tkinter.StringVar()
+
+        self.MainColor="#000000"
+        self.previewColor="#000000"
 
 
 
@@ -42,7 +46,7 @@ class Uimaker(tkinter.Frame):
         list_object_id_string=tkinter.StringVar(value=self)
         #object_tags=[x[0] for x in self.object_coordinate_datas]
         self.object_list = tkinter.Listbox(self, listvariable=object_tags,width=28, height=15)
-        self.object_list.grid(row=1,column=3,columnspan=1,rowspan=3)
+        self.object_list.grid(row=1,column=6,columnspan=1,rowspan=3)
 
         self.draw_line_button = tkinter.Button(self, text='drawline',command = self.drawLine)#直線描画ツール
         self.draw_line_button.grid(row=1, column=0,columnspan=1,rowspan=1)
@@ -56,11 +60,22 @@ class Uimaker(tkinter.Frame):
         self.clear_button = tkinter.Button(self, text='clear all',command= self.Canvas_reset)#キャンバスリセット
         self.clear_button.grid(row=0, column=1,columnspan=1,rowspan=1)
 
-        self.delete_object_button = tkinter.Button(self, text='delete_object', command = self.Delete_componets)#消去ボタン
+        self.delete_object_button = tkinter.Button(self, text='delete', command = self.Delete_componets)#消去ボタン
         self.delete_object_button.grid(row=0, column=2,columnspan=1,rowspan=1)
 
-        self.export_button = tkinter.Button(self, text='save', command = self.export_xmlfile)#消去ボタン
-        self.export_button.grid(row=0, column=3,columnspan=1,rowspan=1)
+        self.color_label = tkinter.Label(self, text='Color :')
+        self.color_label.grid(row=0, column=3,columnspan=1,rowspan=1,sticky=tkinter.E)
+
+        self.Main_Color_button = tkinter.Button(self, text='main', command = self.ChangeMainColor)
+        self.Main_Color_button.grid(row=0, column=4,columnspan=1,rowspan=1)
+
+        self.previewLineColor_button = tkinter.Button(self, text='preview', command = self.ChangePreviewColor)#
+        self.previewLineColor_button.grid(row=0, column=5,columnspan=1,rowspan=1)
+
+        self.export_button = tkinter.Button(self, text='save', command = self.export_xmlfile)#保存ボタン
+        self.export_button.grid(row=0, column=6,columnspan=1,rowspan=1)
+
+
 
 
 
@@ -102,7 +117,17 @@ class Uimaker(tkinter.Frame):
         self.width=Width
         self.height=Height
         self.canvas = tkinter.Canvas(self, bg='white', width=Width, height=Height)
-        self.canvas.grid(row=1, column=1, columnspan=2,rowspan=3)
+        self.canvas.grid(row=1, column=1, columnspan=5,rowspan=3)
+
+    def ChangePreviewColor(self):
+        color = colorchooser.askcolor(title="preview color")
+        self.previewColor=color[1]
+
+    def ChangeMainColor(self):
+        color = colorchooser.askcolor(title="Main color")
+        self.MainColor=color[1]
+        print(color)
+
 
     def preview(self,event):
         if(self.preview_flag==False):
@@ -115,17 +140,22 @@ class Uimaker(tkinter.Frame):
                 self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
                 self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.canvas.delete(self.id)
-                self.id=self.canvas.create_line(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,fill='#FF4500')
+                self.id=self.canvas.create_line(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,fill=self.previewColor)
         elif(self.preview_mode=="Rectangle"):
                 self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
                 self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.canvas.delete(self.id)
-                self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,outline='#FF4500')
+                self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,outline=self.previewColor)
         elif(self.preview_mode=="Oval"):
                 self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
                 self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.canvas.delete(self.id)
-                self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,outline='#FF4500')
+                self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,outline=self.previewColor)
+        elif(self.preview_mode=="Oval"):
+                self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
+                self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
+                self.canvas.delete(self.id)
+                self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,outline=self.previewColor)
 
 
 
@@ -136,16 +166,13 @@ class Uimaker(tkinter.Frame):
         if(self.preview_flag==True):
             self.canvas.delete(self.id)
             if(self.preview_mode == "Line"):
-                self.id=self.canvas.create_line(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1)
+                self.id=self.canvas.create_line(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,fill=self.MainColor)
             elif(self.preview_mode == "Rectangle"):
-                self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1)
+                self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,outline=self.MainColor)
             elif(self.preview_mode == "Oval"):
-                self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1)
+                self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,outline=self.MainColor)
             self.layer[self.id]="1"
             self.preview_flag=False
-
-
-
 
     def Canvas_reset(self):
         return 0
@@ -164,7 +191,6 @@ class Uimaker(tkinter.Frame):
         target_Database.export_Database_as_xml(Canvas_data)
         for i in target_Database.get_UiCode("m5stack"):
             print(i)
-
 
     def export_canvas_components(self):
         Canvas_data={}
