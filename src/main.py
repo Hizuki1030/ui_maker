@@ -76,8 +76,6 @@ class Uimaker(tkinter.Frame):
 
 
 #描画ツール
-#   def drawLine(self):
-#        return 0
     def drawLine(self):
         self.preview_mode="Line"
         return 0
@@ -107,40 +105,30 @@ class Uimaker(tkinter.Frame):
         self.canvas.grid(row=1, column=1, columnspan=2,rowspan=3)
 
     def preview(self,event):
+        if(self.preview_flag==False):
+            self.preview_flag=True
+            self.initial_x = self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
+            self.initial_y = self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
+            self.id=None
+
         if(self.preview_mode=="Line"):
-            if(self.preview_flag==False):
-                self.preview_flag=True
-                self.initial_x = self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
-                self.initial_y = self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
-                self.id=self.canvas.create_line(self.initial_x,self.initial_y,self.initial_x+1,self.initial_y+1,width=1,dash=1,fill='#FF4500')#初期のid作成のために
-            else:
                 self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
                 self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.canvas.delete(self.id)
                 self.id=self.canvas.create_line(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,fill='#FF4500')
         elif(self.preview_mode=="Rectangle"):
-            if(self.preview_flag==False):
-                self.preview_flag=True
-                self.initial_x = self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
-                self.initial_y = self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
-                self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.initial_x+1,self.initial_y+1,width=1,dash=1,fill='#FF4500')#初期のid作成のために
-            else:
                 self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
                 self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.canvas.delete(self.id)
                 self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,outline='#FF4500')
-
         elif(self.preview_mode=="Oval"):
-            if(self.preview_flag==False):
-                self.preview_flag=True
-                self.initial_x = self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
-                self.initial_y = self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
-                self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.initial_x+1,self.initial_y+1,width=1,dash=1,fill='#FF4500')#初期のid作成のために
-            else:
                 self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
                 self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.canvas.delete(self.id)
                 self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,outline='#FF4500')
+
+
+
 
         #~~~~~~~~~クリックを離すとdrawが呼ばれるようになっている~~~~~~~~~~
 
@@ -251,6 +239,8 @@ class Uimaker(tkinter.Frame):
             index=int(coordinate/minimum_pixel)
             coordinate = y[index]
         return coordinate
+
+
 
 root = tkinter.Tk()
 app = Uimaker(master=root)
