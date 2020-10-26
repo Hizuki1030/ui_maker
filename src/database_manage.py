@@ -24,7 +24,7 @@ class Database_manage:
             elif(type == "Rectangle" or type =="fillRectangle" or type=="Oval" or type == "fillOval"):
                 ET.SubElement(components_element,type,{"tag":component["tag"], "ID":str(id), "color":component["outlineColor"], "x0":coordinate[0], "y0":coordinate[1], "x1":coordinate[2], "y1":coordinate[3], "layer":str(component["layer"])})
             elif(type== "Triangle" or type=="fillTriangle"):
-                ET.SubElement(components_element,type,{"tag":component["tag"], "ID":str(id), "color":component["fillColor"], "x0":coordinate[0], "y0":coordinate[1], "x1":coordinate[2], "y1":coordinate[3], "x2":coordinate[2], "y2":coordinate[3], "layer":str(component["layer"])})
+                ET.SubElement(components_element,type,{"tag":component["tag"], "ID":str(id), "color":component["fillColor"], "x0":coordinate[0], "y0":coordinate[1], "x1":coordinate[2], "y1":coordinate[3], "x2":coordinate[4], "y2":coordinate[5], "layer":str(component["layer"])})
             elif(type=="text"):
                 ET.SubElement(components_element,type,{"tag":component["tag"], "ID":str(id), "color":component["fillColor"], "x0":coordinate[0], "y0":coordinate[1],"text":component["text"],"layer":str(component["layer"])})
             elif(type == "image"):
@@ -115,11 +115,11 @@ class Database_manage:
             LayerANDcode.append(self.make_command(Libray_name,"fillOval",a.get("tag"),a.get("color"),coordinate,a.get("layer"),""))
 
         for a in self.element.getiterator("Triangle"):#fillRectangle要素を参照
-            coordinate=[[a.get("x0"),a.get("y0")],[a.get("x1"),a.get("y2")],[a.get("x1"),a.get("y2")]]
+            coordinate=[[a.get("x0"),a.get("y0")],[a.get("x1"),a.get("y1")],[a.get("x2"),a.get("y2")]]
             LayerANDcode.append(self.make_command(Libray_name,"drawTriangle",a.get("tag"),a.get("color"),coordinate,a.get("layer"),""))
 
         for a in self.element.getiterator("fillTriangle"):#fillRectangle要素を参照
-            coordinate=[[a.get("x0"),a.get("y0")],[a.get("x1"),a.get("y2")],[a.get("x1"),a.get("y2")]]
+            coordinate=[[a.get("x0"),a.get("y0")],[a.get("x1"),a.get("y1")],[a.get("x2"),a.get("y2")]]
             LayerANDcode.append(self.make_command(Libray_name,"fillTriangle",a.get("tag"),a.get("color"),coordinate,a.get("layer"),""))
 
         for a in self.element.getiterator("text"):#text要素を参照
