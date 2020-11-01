@@ -2,7 +2,6 @@ import xml.etree.ElementTree as ET
 
 class Database_manage:
     Libray={"m5stack":{"drawLine":"M5.lcd.drawLine","drawRectangle":"M5.Lcd.drawRect","fillRectangle":"M5.Lcd.fillRect","Triangle":"M5.Lcd.drawTriangle","fillTriangle":"M5.Lcd.fillTriangle","drawOval":"M5.Lcd.drawEllipse","fillOval":"M5.Lcd.fillEllipse","text":"M5.Lcd.drawString","image":"M5.Lcd.drawBmpFile"}}
-    Database_pass=""
     def __init__(self,Database_pass):
         self.Database_pass=Database_pass
 
@@ -141,10 +140,11 @@ class Database_manage:
         print(LayerANDcode)
         return code
 
-    def colorChange_hex6_to_hex4(self,value):
+    def colorChange_hex6_to_hex4(self,value):#組み込み向けのディスプレイを16進数を4桁で指定するがtkinterでは6桁で指定するのでカラーコードの変換が必要
         value = value.lstrip('#')
+        print("value",value)
         lv = len(value)
-        RGB=tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))#(x,x,x)
+        RGB=tuple(int(value[i:i + lv // 3],base=16) for i in range(0, lv, lv // 3))#(x,x,x)
         red=int(RGB[0])
         green = int(RGB[1])
         blue= int(RGB[2])

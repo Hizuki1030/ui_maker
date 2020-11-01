@@ -3,6 +3,7 @@ from tkinter import colorchooser
 import database_manage
 import numpy as np
 import math
+import logging
 class Uimaker(tkinter.Frame):
 
 
@@ -26,6 +27,7 @@ class Uimaker(tkinter.Frame):
         self.preview_mode=None
         self.minimum_pixelX=10
         self.minimum_pixelY=10
+        self.func_B1_Motion_mode="preview"
 
         self.layer={}#描画する度にレイヤー辞書にidとレイヤーをいれてい置く
 
@@ -34,40 +36,41 @@ class Uimaker(tkinter.Frame):
         self.MainColor="#000000"
         self.previewColor="#000000"
 
+        logging.disable(logging.CRITICAL)
+
 
 
 
     def create_widgets(self):
         self.make_canvas(320,240)
 
-        self.mouse_coordinate_label=tkinter.Label(self,textvariable=self.label_mouse_coordinate)
+        self.mouse_coordinate_label=tkinter.Label(self,textvariable=self.label_mouse_coordinate)#マウス座標確認用
         self.mouse_coordinate_label.grid(row=0, column=0,columnspan=1,rowspan=1)
+        #現在動作なし==========================
         object_tags=[]
         list_object_id_string=tkinter.StringVar(value=self)
         #object_tags=[x[0] for x in self.object_coordinate_datas]
+        #======================================
         self.object_list = tkinter.Listbox(self, listvariable=object_tags,width=28, height=15)
         self.object_list.grid(row=1,column=6,columnspan=1,rowspan=7)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        self.draw_line_button = tkinter.Button(self, text='line',command = self.drawLine,width = 10)#直線描画ツール
+        self.draw_line_button = tkinter.Button(self, text='line',command = self.drawLine,width = 10)#直線描画ツールボタン
         self.draw_line_button.grid(row=1, column=0,sticky=tkinter.W)
 
-        self.draw_rectangle_button = tkinter.Button(self, text='rect',command = self.drawRectangle ,width = 10)#長方形描画ツール（塗りつぶしなし）
+        self.draw_rectangle_button = tkinter.Button(self, text='rect',command = self.drawRectangle ,width = 10)#長方形描画ツール（塗りつぶしなし）ボタン
         self.draw_rectangle_button.grid(row=3, column=0,sticky=tkinter.W)
 
-        self.draw_oval_button = tkinter.Button(self, text='oval',command = self.drawOval ,width = 10)#楕円描画ツール（塗りつぶしなし）
+        self.draw_oval_button = tkinter.Button(self, text='oval',command = self.drawOval ,width = 10)#楕円描画ツール（塗りつぶしなし）ボタン
         self.draw_oval_button.grid(row=2, column=0,sticky=tkinter.W)
 
-        self.draw_triangle_button = tkinter.Button(self,text = "triangle",command=self.drawTriangle,width = 10)
-        self.draw_triangle_button.grid(row=4,column =0,sticky=tkinter.W)
+        self.draw_fillrectangle_button = tkinter.Button(self, text='fill rect',command = self.fillRectangle ,width = 10)#長方形描画ツール（塗りつぶし）ボタン
+        self.draw_fillrectangle_button.grid(row=4, column=0,sticky=tkinter.W)
 
-        self.draw_fillrectangle_button = tkinter.Button(self, text='fill rect',command = self.fillRectangle ,width = 10)#長方形描画ツール（塗りつぶしなし）
-        self.draw_fillrectangle_button.grid(row=5, column=0,sticky=tkinter.W)
+        self.draw_filloval_button = tkinter.Button(self, text='fill oval',command = self.fillOval ,width = 10)#楕円描画ツール（塗りつぶし）ボタン
+        self.draw_filloval_button.grid(row=5, column=0,sticky=tkinter.W)
 
-        self.draw_filloval_button = tkinter.Button(self, text='fill oval',command = self.fillOval ,width = 10)#楕円描画ツール（塗りつぶしなし）
-        self.draw_filloval_button.grid(row=6, column=0,sticky=tkinter.W)
-
-        self.draw_filltriangle_button = tkinter.Button(self,text = "fill triangle",command=self.fillTriangle,width = 10)
-        self.draw_filltriangle_button.grid(row=7,column =0,sticky=tkinter.W)
+        self.draw_filltriangle_button = tkinter.Button(self,text = "fill triangle",command=self.fillTriangle,width = 10)#三角形描画ツールボタン
+        self.draw_filltriangle_button.grid(row=6,column =0,sticky=tkinter.W)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -81,24 +84,16 @@ class Uimaker(tkinter.Frame):
         self.color_label = tkinter.Label(self, text='Color :')
         self.color_label.grid(row=0, column=3,columnspan=1,rowspan=1,sticky=tkinter.E)
 
-        self.Main_Color_button = tkinter.Button(self, text='main', command = self.ChangeMainColor)
+        self.Main_Color_button = tkinter.Button(self, text='main', command = self.ChangeMainColor)#描画される色の指定
         self.Main_Color_button.grid(row=0, column=4,columnspan=1,rowspan=1)
 
-        self.previewLineColor_button = tkinter.Button(self, text='preview', command = self.ChangePreviewColor)#
+        self.previewLineColor_button = tkinter.Button(self, text='preview', command = self.ChangePreviewColor)#previewで表示される色
         self.previewLineColor_button.grid(row=0, column=5,columnspan=1,rowspan=1)
 
         self.export_button = tkinter.Button(self, text='save', command = self.export_xmlfile)#保存ボタン
         self.export_button.grid(row=0, column=6,columnspan=1,rowspan=1)
 
-
-
-
-
-
-
-
-
-        self.canvas.bind('<B1-Motion>', self.preview)
+        self.canvas.bind('<B1-Motion>', self.func_B1_Motion)
         self.canvas.bind('<ButtonRelease>', self.draw)
         self.canvas.bind('<Motion>',self.set_mouse_coordinate)
         #self.object_list.bind('<Double-1>',  self.object_property)
@@ -107,22 +102,31 @@ class Uimaker(tkinter.Frame):
 
 #描画ツール
     def drawLine(self):
+        self.func_B1_Motion_mode="preview"
         self.preview_mode="Line"
+        logging.warning("drawline mode")
     def drawRectangle(self):
+        self.func_B1_Motion_mode="preview"
         self.preview_mode="Rectangle"
+        logging.warning("drawRectangle mode")
     def fillRectangle(self):
+        self.func_B1_Motion_mode="preview"
         self.preview_mode="fillRectangle"
+        logging.warning("fillRectangle")
     def drawOval(self):
+        self.func_B1_Motion_mode="preview"
         self.preview_mode="Oval"
     def fillOval(self):
+        self.func_B1_Motion_mode="preview"
         self.preview_mode="fillOval"
-    def drawTriangle(self):
-        self.preview_mode="Triangle"
     def fillTriangle(self):
+        self.func_B1_Motion_mode="preview"
         self.preview_mode="fillTriangle"
     def drawText(self):
+        self.func_B1_Motion_mode="preview"
         return 0
     def drawPicture(self):
+        self.func_B1_Motion_mode="preview"
         return 0
 
 #～～～～～～～～～～～～～～～～～～～～～～～
@@ -142,39 +146,44 @@ class Uimaker(tkinter.Frame):
         print(color)
 
 
-    def preview(self,event):
-        if(self.preview_flag==False):
-            self.preview_flag=True
-            self.initial_x = self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
-            self.initial_y = self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
-            self.id=None
-
-        if(self.preview_mode=="Line"):
+    def func_B1_Motion(self,event):
+        if(self.func_B1_Motion_mode == "preview"):
+            if(self.preview_flag==False):#マウスを右クリックし始めたcanvas上の座標を取得
+                self.preview_flag=True
+                self.initial_x = self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
+                self.initial_y = self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
+                self.id=None
+            if(self.preview_mode=="Line"):
                 self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
                 self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.canvas.delete(self.id)
                 self.id=self.canvas.create_line(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,fill=self.previewColor)
-        elif(self.preview_mode=="Rectangle"):
+            elif(self.preview_mode=="Rectangle"):
                 self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
                 self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.canvas.delete(self.id)
                 self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,outline=self.previewColor)
-        elif(self.preview_mode=="Oval"):
+            elif(self.preview_mode=="Oval"):
                 self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
                 self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.canvas.delete(self.id)
                 self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,outline=self.previewColor)
-        elif(self.preview_mode=="Triangle"):
+            elif(self.preview_mode=="fillRectangle"):
                 self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
                 self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.canvas.delete(self.id)
-
-                self.id=self.canvas.create_polygon(self.initial_x,self.initial_y,self.final_x,self.initial_y,(self.initial_x+self.final_x)/2,self.final_y,width=1,fill=self.MainColor)
-
-
-
-
-        #~~~~~~~~~クリックを離すとdrawが呼ばれるようになっている~~~~~~~~~~
+                self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,fill=self.previewColor)
+            elif(self.preview_mode=="fillOval"):
+                self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
+                self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
+                self.canvas.delete(self.id)
+                self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,fill=self.previewColor)
+            elif(self.preview_mode=="fillTriangle"):
+                self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
+                self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
+                self.canvas.delete(self.id)
+                self.id=self.canvas.create_polygon(self.initial_x,self.initial_y,self.final_x,self.initial_y,(self.initial_x+self.final_x)/2,self.final_y,width=1,outline=self.previewColor)
+#~~~~~~~~~クリックを離すとdrawが呼ばれるようになっている~~~~~~~~~~
 
     def draw(self,event):
         if(self.preview_flag==True):
@@ -185,19 +194,22 @@ class Uimaker(tkinter.Frame):
                 self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,outline=self.MainColor)
             elif(self.preview_mode == "Oval"):
                 self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,outline=self.MainColor)
-            elif(self.preview_mode == "Triangle"):
-                self.id=self.canvas.create_polygon(self.initial_x,self.initial_y,self.final_x,self.initial_y,(self.initial_x+self.final_x)/2,self.final_y,width=1,fill=self.MainColor)
+            elif(self.preview_mode == "fillTriangle"):
+                self.id=self.canvas.create_polygon(self.initial_x,self.initial_y,self.final_x,self.initial_y,(self.initial_x+self.final_x)/2,self.final_y,fill=self.MainColor)
             elif(self.preview_mode == "fillRectangle"):
                 self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,fill=self.MainColor)
             elif(self.preview_mode == "fillOval"):
                 self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,fill=self.MainColor)
+            else :
+                print("Error: preview is not define")
             self.layer[self.id]="1"
             self.preview_flag=False
 
-    def Canvas_reset(self):
+
+    def Canvas_reset(self):#未実装
         return 0
 
-    def Delete_componets(self):
+    def Delete_componets(self):#未実装
         return 0
     def set_mouse_coordinate(self,event):
         mouse_X=event.x
@@ -235,7 +247,7 @@ class Uimaker(tkinter.Frame):
                 fillColor = self.canvas.itemcget(id,"fill")
                 component["lineColor"]=fillColor
 
-            #line or rectangle or triangleが塗りつぶしなのかどうか~~~~~
+            #line or rectangle or triangleが塗りつぶしなのかどうか~~~~~~~~~~~~~~~~~~~~
             #塗りつぶしなら、typeの前にfillを付ける
             elif(type=="rectangle" or type == "triangle" or type == "oval"):
                 type = type[0].upper()+type[1:]#一番最初の文字を大文字に
@@ -246,7 +258,10 @@ class Uimaker(tkinter.Frame):
                 outlineColor = self.canvas.itemcget(id,"outline")
                 if(outlineColor != ""):
                     component["outlineColor"]=outlineColor
-            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
             elif(type=="text"):
                 text = self.canvas.itemcget(id,"text")
                 fillColor = self.canvas.itemcget(id,"fg")
@@ -256,9 +271,6 @@ class Uimaker(tkinter.Frame):
                 image = self.canvas.itemcget(id,"image")
 
             component["type"]= type
-
-
-
             Canvas_data[id]=component
 
         return Canvas_data
