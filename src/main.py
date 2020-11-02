@@ -4,6 +4,7 @@ import database_manage
 import numpy as np
 import math
 import logging
+import ParameterWindow as PW
 class Uimaker(tkinter.Frame):
 
 
@@ -17,6 +18,7 @@ class Uimaker(tkinter.Frame):
         #self.preview("line","black")
 
     def setup(self):
+
 
         self.preview_flag=False
         self.id=None
@@ -35,6 +37,7 @@ class Uimaker(tkinter.Frame):
 
         self.MainColor="#000000"
         self.previewColor="#000000"
+
 
         logging.disable(logging.CRITICAL)
 
@@ -97,6 +100,9 @@ class Uimaker(tkinter.Frame):
         self.canvas.bind('<ButtonRelease>', self.draw)
         self.canvas.bind('<Motion>',self.set_mouse_coordinate)
         #self.object_list.bind('<Double-1>',  self.object_property)
+
+
+        self.parameterApp=PW.ParameterWindow(self,self.canvas)
 
 
 
@@ -190,6 +196,7 @@ class Uimaker(tkinter.Frame):
             self.canvas.delete(self.id)
             if(self.preview_mode == "Line"):
                 self.id=self.canvas.create_line(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,fill=self.MainColor)
+                self.parameterApp.LineWindow(self.id)
             elif(self.preview_mode == "Rectangle"):
                 self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,outline=self.MainColor)
             elif(self.preview_mode == "Oval"):
@@ -202,6 +209,8 @@ class Uimaker(tkinter.Frame):
                 self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,fill=self.MainColor)
             else :
                 print("Error: preview is not define")
+
+
             self.layer[self.id]="1"
             self.preview_flag=False
 
