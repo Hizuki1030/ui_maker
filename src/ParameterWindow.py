@@ -12,10 +12,10 @@ class ParameterWindow:
         coordinate=self.canvas.coords(id)
         color=self.canvas.itemcget(id,"fill")
         parentFrame = tkinter.Toplevel(self.parent)
-        parentFrame.geometry("300x200")
+        #parentFrame.geometry("300x200")
 
 
-        tkinter.Label(parentFrame,text="coordinate").grid(column=0,row=0)
+        #tkinter.Label(parentFrame,text="coordinate").grid(column=0,row=0)
         partsCoordinateX=0
         partsCoordinateY=1
         X1_Label = tkinter.Label(parentFrame,text="X1")
@@ -41,11 +41,32 @@ class ParameterWindow:
         Y2_entry.insert(tkinter.END,coordinate[3])
 
 
+        partsIdX = 0
+        partsIdY = 0
+        Label_Id = "ID :   " + str(id)
+        tkinter.Label(parentFrame,text=Label_Id).grid(column=partsIdX,row=partsIdY,padx=(10,0))
+
+
         partsColorX = 2
-        partsColorY = 0
-        tkinter.Label(parentFrame,text="color:").grid(column=partsColorX,row=partsColorY,padx=(10,0))
-        color = tkinter.Entry(parentFrame,width=10)
-        color.grid(column=partsColorX+1,row=partsColorY)
+        partsColorY = 1
+        tkinter.Label(parentFrame,text="color :").grid(column=partsColorX,row=partsColorY,padx=(10,0))
+        color_entry = tkinter.Entry(parentFrame,width=15)
+        color_entry.grid(column=partsColorX+1,row=partsColorY,padx=(0,20))
+        #初期値の入力
+        color_entry.insert(tkinter.END,color)
+
+        partsTagX = 2
+        partsTagY = 2
+        tkinter.Label(parentFrame,text="tag :").grid(column=partsTagX,row=partsTagY,padx=(10,0))
+        tag_entry = tkinter.Entry(parentFrame,width=15)
+        tag_entry.grid(column=partsTagX+1,row=partsTagY,padx=(0,20))
+
+
+        partsLayerX = 2
+        partsLayerY = 3
+        tkinter.Label(parentFrame,text="layer :").grid(column=partsLayerX,row=partsLayerY,padx=(10,0))
+        Layer_entry = tkinter.Entry(parentFrame,width=15)
+        Layer_entry.grid(column=partsLayerX+1,row=partsLayerY,padx=(0,20))
 
 
 

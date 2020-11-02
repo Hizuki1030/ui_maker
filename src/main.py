@@ -242,7 +242,7 @@ class Uimaker(tkinter.Frame):
             fillColor=""
             outlineColor=""
             type = self.canvas.type(id)
-            if(type == "polygon"):
+            if(type == "polygon"):#tkinterのpolygonを三角形としてつかう
                 type="triangle"
 
             tag = self.canvas.itemcget(id,"tags")
@@ -278,7 +278,7 @@ class Uimaker(tkinter.Frame):
                 component["fillColor"]=fillColor
             elif(type=="image"):
                 image = self.canvas.itemcget(id,"image")
-
+ 
             component["type"]= type
             Canvas_data[id]=component
 
