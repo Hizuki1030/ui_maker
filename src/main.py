@@ -278,7 +278,7 @@ class Uimaker(tkinter.Frame):
                 component["fillColor"]=fillColor
             elif(type=="image"):
                 image = self.canvas.itemcget(id,"image")
- 
+
             component["type"]= type
             Canvas_data[id]=component
 
