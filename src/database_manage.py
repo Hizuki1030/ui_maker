@@ -15,7 +15,6 @@ class Database_manage:
             component=components[id]
             type=component["type"]
             coordinate=[int(x) for x in component["coordinate"]]#float配列をintにキャスト
-            print(coordinate)
             coordinate=[str(x) for x in coordinate]#int配列をstrにキャスト
             if(type=="line"):
                 ET.SubElement(components_element,type,{"tag":component["tag"], "ID":str(id), "color":component["lineColor"], "x0":coordinate[0], "y0":coordinate[1], "x1":coordinate[2], "y1":coordinate[3], "layer":str(component["layer"])})
@@ -95,39 +94,39 @@ class Database_manage:
         LayerANDcode=[]
         for a in self.element.getiterator("line"):#line要素を参照
             coordinate=[[a.get("x0"),a.get("y0")],[a.get("x1"),a.get("y1")]]
-            LayerANDcode.append(self.make_command(Libray_name,"drawLine",a.get("tag"),a.get("color"),coordinate,a.get("layer"),""))
+            LayerANDcode.append(self.make_command(Libray_name,"drawLine",a.get("tag"),a.get("color"),coordinate,int(a.get("layer")),""))
 
         for a in self.element.getiterator("Rectangle"):#Rectangle要素を参照
             coordinate=[[a.get("x0"),a.get("y0")],[a.get("x1"),a.get("y1")]]
-            LayerANDcode.append(self.make_command(Libray_name,"drawRectangle",a.get("tag"),a.get("color"),coordinate,a.get("layer"),""))
+            LayerANDcode.append(self.make_command(Libray_name,"drawRectangle",a.get("tag"),a.get("color"),coordinate,int(a.get("layer")),""))
 
         for a in self.element.getiterator("fillRectangle"):#fillRectangle要素を参照
             coordinate=[[a.get("x0"),a.get("y0")],[a.get("x1"),a.get("y1")]]
-            LayerANDcode.append(self.make_command(Libray_name,"fillRectangle",a.get("tag"),a.get("color"),coordinate,a.get("layer"),""))
+            LayerANDcode.append(self.make_command(Libray_name,"fillRectangle",a.get("tag"),a.get("color"),coordinate,int(a.get("layer")),""))
 
         for a in self.element.getiterator("Oval"):#Rectangle要素を参照
             coordinate=[[a.get("x0"),a.get("y0")],[a.get("x1"),a.get("y1")]]
-            LayerANDcode.append(self.make_command(Libray_name,"drawOval",a.get("tag"),a.get("color"),coordinate,a.get("layer"),""))
+            LayerANDcode.append(self.make_command(Libray_name,"drawOval",a.get("tag"),a.get("color"),coordinate,int(a.get("layer")),""))
 
         for a in self.element.getiterator("fillOval"):#fillRectangle要素を参照
             coordinate=[[a.get("x0"),a.get("y0")],[a.get("x1"),a.get("y1")]]
-            LayerANDcode.append(self.make_command(Libray_name,"fillOval",a.get("tag"),a.get("color"),coordinate,a.get("layer"),""))
+            LayerANDcode.append(self.make_command(Libray_name,"fillOval",a.get("tag"),a.get("color"),coordinate,int(a.get("layer")),""))
 
         for a in self.element.getiterator("Triangle"):#fillRectangle要素を参照
             coordinate=[[a.get("x0"),a.get("y0")],[a.get("x1"),a.get("y1")],[a.get("x2"),a.get("y2")]]
-            LayerANDcode.append(self.make_command(Libray_name,"drawTriangle",a.get("tag"),a.get("color"),coordinate,a.get("layer"),""))
+            LayerANDcode.append(self.make_command(Libray_name,"drawTriangle",a.get("tag"),a.get("color"),coordinate,int(a.get("layer")),""))
 
         for a in self.element.getiterator("fillTriangle"):#fillRectangle要素を参照
             coordinate=[[a.get("x0"),a.get("y0")],[a.get("x1"),a.get("y1")],[a.get("x2"),a.get("y2")]]
-            LayerANDcode.append(self.make_command(Libray_name,"fillTriangle",a.get("tag"),a.get("color"),coordinate,a.get("layer"),""))
+            LayerANDcode.append(self.make_command(Libray_name,"fillTriangle",a.get("tag"),a.get("color"),coordinate,int(a.get("layer")),""))
 
         for a in self.element.getiterator("text"):#text要素を参照
             coordinate=[a.get("x0"),a.get("y0")]
-            LayerANDcode.append(self.make_command(Libray_name,"text",a.get("tag"),a.get("color"),coordinate,a.get("layer"),a.get("text")))
+            LayerANDcode.append(self.make_command(Libray_name,"text",a.get("tag"),a.get("color"),coordinate,int(a.get("layer")),a.get("text")))
 
         for a in self.element.getiterator("image"):#text要素を参照
             coordinate=[a.get("x0"),a.get("y0")]
-            LayerANDcode.append(self.make_command(Libray_name,"image",a.get("tag"),None,coordinate,a.get("layer"),a.get("image")))
+            LayerANDcode.append(self.make_command(Libray_name,"image",a.get("tag"),None,coordinate,int(a.get("layer")),a.get("image")))
 
         return LayerANDcode
 
@@ -137,7 +136,7 @@ class Database_manage:
         LayerANDcode=self.get_LayerAndcode(Libray_name)
         LayerANDcode.sort(reverse=True)
         code=[x[1] for x in LayerANDcode]
-        print(LayerANDcode)
+
         return code
 
     def colorChange_hex6_to_hex4(self,value):#組み込み向けのディスプレイを16進数を4桁で指定するがtkinterでは6桁で指定するのでカラーコードの変換が必要

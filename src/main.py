@@ -102,7 +102,7 @@ class Uimaker(tkinter.Frame):
         #self.object_list.bind('<Double-1>',  self.object_property)
 
 
-        self.parameterApp=PW.ParameterWindow(self,self.canvas)
+        self.parameterApp=PW.ParameterWindow(self,self.canvas,self.layer)
 
 
 
@@ -139,7 +139,7 @@ class Uimaker(tkinter.Frame):
     def make_canvas(self,Width,Height):
         self.width=Width
         self.height=Height
-        self.canvas = tkinter.Canvas(self, bg='white', width=Width, height=Height)
+        self.canvas = tkinter.Canvas(self, bg='black', width=Width, height=Height)
         self.canvas.grid(row=1, column=1, columnspan=5,rowspan=7)
 
     def ChangePreviewColor(self):
@@ -149,7 +149,6 @@ class Uimaker(tkinter.Frame):
     def ChangeMainColor(self):
         color = colorchooser.askcolor(title="Main color")
         self.MainColor=color[1]
-        print(color)
 
 
     def func_B1_Motion(self,event):
@@ -178,12 +177,12 @@ class Uimaker(tkinter.Frame):
                 self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
                 self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.canvas.delete(self.id)
-                self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,fill=self.previewColor)
+                self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,fill=self.previewColor,outline=self.previewColor)
             elif(self.preview_mode=="fillOval"):
                 self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
                 self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.canvas.delete(self.id)
-                self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,fill=self.previewColor)
+                self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,fill=self.previewColor,outline=self.previewColor)
             elif(self.preview_mode=="fillTriangle"):
                 self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
                 self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
@@ -196,7 +195,6 @@ class Uimaker(tkinter.Frame):
             self.canvas.delete(self.id)
             if(self.preview_mode == "Line"):
                 self.id=self.canvas.create_line(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,fill=self.MainColor)
-                self.parameterApp.LineWindow(self.id)
             elif(self.preview_mode == "Rectangle"):
                 self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,outline=self.MainColor)
             elif(self.preview_mode == "Oval"):
@@ -204,14 +202,13 @@ class Uimaker(tkinter.Frame):
             elif(self.preview_mode == "fillTriangle"):
                 self.id=self.canvas.create_polygon(self.initial_x,self.initial_y,self.final_x,self.initial_y,(self.initial_x+self.final_x)/2,self.final_y,fill=self.MainColor)
             elif(self.preview_mode == "fillRectangle"):
-                self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,fill=self.MainColor)
+                self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,fill=self.MainColor,outline=self.MainColor)
             elif(self.preview_mode == "fillOval"):
-                self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,fill=self.MainColor)
+                self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,fill=self.MainColor,outline=self.MainColor)
             else :
                 print("Error: preview is not define")
+            self.parameterApp.makeWindow(self.id,self.preview_mode)
 
-
-            self.layer[self.id]="1"
             self.preview_flag=False
 
 
