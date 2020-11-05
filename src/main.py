@@ -45,7 +45,7 @@ class Uimaker(tkinter.Frame):
 
 
     def create_widgets(self):
-        self.make_canvas(320,240)
+        self.make_canvas(240,240)
 
         self.mouse_coordinate_label=tkinter.Label(self,textvariable=self.label_mouse_coordinate)#マウス座標確認用
         self.mouse_coordinate_label.grid(row=0, column=0,columnspan=1,rowspan=1)
