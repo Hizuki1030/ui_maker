@@ -2,6 +2,7 @@ import tkinter
 import tkinter.messagebox as tkm
 class ParameterWindow:
     def __init__(self,parent,canvas,layer):
+        self.layer={}
         self.layer=layer
         self.parent=parent
         self.canvas=canvas
@@ -72,6 +73,7 @@ class ParameterWindow:
             self.layer_entry = tkinter.Entry(parentFrame,width=15)
             self.layer_entry.grid(column=partsLayerX+1,row=partsLayerY,padx=(0,20))
 
+            self.layer_entry.insert(tkinter.END,"1")
 
             partsUpdatebuttonY = partsCoordinateY+4
             Update_button = tkinter.Button(parentFrame,text="UPDATE",command=self.updateParameter)
@@ -149,6 +151,7 @@ class ParameterWindow:
             self.layer_entry = tkinter.Entry(parentFrame,width=15)
             self.layer_entry.grid(column=partsLayerX+1,row=partsLayerY,padx=(0,20))
 
+            self.layer_entry.insert(tkinter.END,"1")
 
             partsUpdatebuttonY = partsCoordinateY+4
             Update_button = tkinter.Button(parentFrame,text="UPDATE",command=self.updateParameter)
@@ -194,6 +197,51 @@ class ParameterWindow:
             self.Y0_entry.insert(tkinter.END,coordinate[1])
             self.X1_entry.insert(tkinter.END,coordinate[2])
             self.Y1_entry.insert(tkinter.END,coordinate[3])
+
+            partsIdX = 0
+            partsIdY = 0
+            Label_Id = "ID :   " + str(id)
+            tkinter.Label(parentFrame,text=Label_Id).grid(column=partsIdX,row=partsIdY,padx=(10,0))
+
+
+            partsColorX = 2
+            partsColorY = 1
+            tkinter.Label(parentFrame,text="color :").grid(column=partsColorX,row=partsColorY,padx=(10,0))
+            self.color_entry = tkinter.Entry(parentFrame,width=15)
+            self.color_entry.grid(column=partsColorX+1,row=partsColorY,padx=(0,20))
+            #初期値の入力
+            self.color_entry.insert(tkinter.END,color)
+
+            partsTagX = 2
+            partsTagY = 2
+            tkinter.Label(parentFrame,text="tag :").grid(column=partsTagX,row=partsTagY,padx=(10,0))
+            self.tag_entry = tkinter.Entry(parentFrame,width=15)
+            self.tag_entry.grid(column=partsTagX+1,row=partsTagY,padx=(0,20))
+
+
+            partsLayerX = 2
+            partsLayerY = 3
+            tkinter.Label(parentFrame,text="layer :").grid(column=partsLayerX,row=partsLayerY,padx=(10,0))
+            self.layer_entry = tkinter.Entry(parentFrame,width=15)
+            self.layer_entry.grid(column=partsLayerX+1,row=partsLayerY,padx=(0,20))
+
+            self.layer_entry.insert(tkinter.END,"1")
+
+
+            partsUpdatebuttonY = partsCoordinateY+6
+            Update_button = tkinter.Button(parentFrame,text="UPDATE",command=self.updateParameter)
+            Update_button.grid(column=3,row=partsUpdatebuttonY)
+
+
+            partsCancelbuttonY = partsCoordinateY+6
+            Cancelbutton = tkinter.Button(parentFrame,text="CANCEL",default=tkinter.ACTIVE)
+            Cancelbutton.grid(column=2,row=partsUpdatebuttonY)
+
+
+
+            partsOKbuttonY = partsCoordinateY+6
+            ok_button = tkinter.Button(parentFrame,text="  OK  ",default=tkinter.ACTIVE)
+            ok_button.grid(column=0,row=partsOKbuttonY,columnspan=2)
 
         elif(self.save_mode == "fillTriangle"):
             color=None
@@ -263,6 +311,8 @@ class ParameterWindow:
             self.layer_entry = tkinter.Entry(parentFrame,width=15)
             self.layer_entry.grid(column=partsLayerX+1,row=partsLayerY,padx=(0,20))
 
+            self.layer_entry.insert(tkinter.END,"1")
+
 
             partsUpdatebuttonY = partsCoordinateY+6
             Update_button = tkinter.Button(parentFrame,text="UPDATE",command=self.updateParameter)
@@ -309,7 +359,7 @@ class ParameterWindow:
 
             tag=self.tag_entry.get()
             color=self.color_entry.get()
-            layer=self.layer_entry.get()
+            layer=int(self.layer_entry.get())
             #~~辞書データの生成　例:{'coords': ['70', '30', '180', '120'], 'tag': 'hello', 'color': '#000000', 'layer': '1'}~~~~~~~~~
             parameter_dict["id"]=self.id
             parameter_dict["coords"]=coordinate
@@ -333,7 +383,7 @@ class ParameterWindow:
 
             tag=self.tag_entry.get()
             color=self.color_entry.get()
-            layer=self.layer_entry.get()
+            layer=int(self.layer_entry.get())
             #~~辞書データの生成　例:{'coords': ['70', '30', '180', '120'], 'tag': 'hello', 'color': '#000000', 'layer': '1'}~~~~~~~~~
             parameter_dict["id"]=self.id
             parameter_dict["coords"]=coordinate
@@ -356,7 +406,7 @@ class ParameterWindow:
 
             tag=self.tag_entry.get()
             color=self.color_entry.get()
-            layer=self.layer_entry.get()
+            layer=int(self.layer_entry.get())
             #~~辞書データの生成　例:{'coords': ['70', '30', '180', '120'], 'tag': 'hello', 'color': '#000000', 'layer': '1'}~~~~~~~~~
             parameter_dict["id"]=self.id
             parameter_dict["coords"]=coordinate
@@ -383,7 +433,7 @@ class ParameterWindow:
 
             tag=self.tag_entry.get()
             color=self.color_entry.get()
-            layer=self.layer_entry.get()
+            layer=int(self.layer_entry.get())
             #~~辞書データの生成　例:{'coords': ['70', '30', '180', '120'], 'tag': 'hello', 'color': '#000000', 'layer': '1'}~~~~~~~~~
             parameter_dict["id"]=self.id
             parameter_dict["coords"]=coordinate
@@ -434,3 +484,5 @@ class ParameterWindow:
             self.layer[self.id]=parameter["layer"]
         else:
             print("Error:no matching savve_mode    setParameter()")
+
+        print("from patameterWindow",self.layer)

@@ -139,7 +139,7 @@ class Uimaker(tkinter.Frame):
     def make_canvas(self,Width,Height):
         self.width=Width
         self.height=Height
-        self.canvas = tkinter.Canvas(self, bg='black', width=Width, height=Height)
+        self.canvas = tkinter.Canvas(self, bg='white', width=Width, height=Height)
         self.canvas.grid(row=1, column=1, columnspan=5,rowspan=7)
 
     def ChangePreviewColor(self):
@@ -210,10 +210,11 @@ class Uimaker(tkinter.Frame):
             self.parameterApp.makeWindow(self.id,self.preview_mode)
 
             self.preview_flag=False
+            print(self.layer)
 
 
     def Canvas_reset(self):#未実装
-        return 0
+        self.sortComponentsLayer()
 
     def Delete_componets(self):#未実装
         return 0
@@ -304,6 +305,17 @@ class Uimaker(tkinter.Frame):
             index=int(coordinate/minimum_pixel)
             coordinate = y[index]
         return coordinate
+
+    def sortComponentsLayer(self):
+        print("call sortComponentsLayer")
+        layer_id={}
+        print(np.arange(1,max(self.layer.values())))
+        for layer in np.arange(1,max(self.layer.values())+1):
+            keys_id = [k for k, v in self.layer.items() if v == layer]
+            for id in keys_id:
+                print("settingLayer:",id)
+                self.canvas.lower(id)
+
 
 
 
