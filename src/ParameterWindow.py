@@ -16,28 +16,28 @@ class ParameterWindow:
         coordinate=self.canvas.coords(id)
         coordinate=[int(x) for x in coordinate ]
 
-        parentFrame = tkinter.Toplevel(self.parent)
+        self.parameterWindow = tkinter.Toplevel(self.parent)
 
         if(self.save_mode=="Line"):
             color=self.canvas.itemcget(id,"fill")
-            #tkinter.Label(parentFrame,text="coordinate").grid(column=0,row=0)
+            #tkinter.Label(self.parameterWindow,text="coordinate").grid(column=0,row=0)
             partsCoordinateX=0
             partsCoordinateY=1
-            X0_Label = tkinter.Label(parentFrame,text="X0")
+            X0_Label = tkinter.Label(self.parameterWindow,text="X0")
             X0_Label.grid(column=partsCoordinateX,row=partsCoordinateY)
-            Y0_Label = tkinter.Label(parentFrame,text="Y0")
+            Y0_Label = tkinter.Label(self.parameterWindow,text="Y0")
             Y0_Label.grid(column=partsCoordinateX,row=partsCoordinateY+1)
-            X1_Label = tkinter.Label(parentFrame,text="X1")
+            X1_Label = tkinter.Label(self.parameterWindow,text="X1")
             X1_Label.grid(column=partsCoordinateX,row=partsCoordinateY+2)
-            Y1_Label = tkinter.Label(parentFrame,text="Y1")
+            Y1_Label = tkinter.Label(self.parameterWindow,text="Y1")
             Y1_Label.grid(column=partsCoordinateX,row=partsCoordinateY+3)
-            self.X0_entry = tkinter.Entry(parentFrame,width=10)
+            self.X0_entry = tkinter.Entry(self.parameterWindow,width=10)
             self.X0_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY)
-            self.Y0_entry = tkinter.Entry(parentFrame,width=10)
+            self.Y0_entry = tkinter.Entry(self.parameterWindow,width=10)
             self.Y0_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY+1)
-            self.X1_entry = tkinter.Entry(parentFrame,width=10)
+            self.X1_entry = tkinter.Entry(self.parameterWindow,width=10)
             self.X1_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY+2)
-            self.Y1_entry = tkinter.Entry(parentFrame,width=10)
+            self.Y1_entry = tkinter.Entry(self.parameterWindow,width=10)
             self.Y1_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY+3)
             #初期値の入力
             self.X0_entry.insert(tkinter.END,coordinate[0])
@@ -49,45 +49,45 @@ class ParameterWindow:
             partsIdX = 0
             partsIdY = 0
             Label_Id = "ID :   " + str(id)
-            tkinter.Label(parentFrame,text=Label_Id).grid(column=partsIdX,row=partsIdY,padx=(10,0))
+            tkinter.Label(self.parameterWindow,text=Label_Id).grid(column=partsIdX,row=partsIdY,padx=(10,0))
 
 
             partsColorX = 2
             partsColorY = 1
-            tkinter.Label(parentFrame,text="color :").grid(column=partsColorX,row=partsColorY,padx=(10,0))
-            self.color_entry = tkinter.Entry(parentFrame,width=15)
+            tkinter.Label(self.parameterWindow,text="color :").grid(column=partsColorX,row=partsColorY,padx=(10,0))
+            self.color_entry = tkinter.Entry(self.parameterWindow,width=15)
             self.color_entry.grid(column=partsColorX+1,row=partsColorY,padx=(0,20))
             #初期値の入力
             self.color_entry.insert(tkinter.END,color)
 
             partsTagX = 2
             partsTagY = 2
-            tkinter.Label(parentFrame,text="tag :").grid(column=partsTagX,row=partsTagY,padx=(10,0))
-            self.tag_entry = tkinter.Entry(parentFrame,width=15)
+            tkinter.Label(self.parameterWindow,text="tag :").grid(column=partsTagX,row=partsTagY,padx=(10,0))
+            self.tag_entry = tkinter.Entry(self.parameterWindow,width=15)
             self.tag_entry.grid(column=partsTagX+1,row=partsTagY,padx=(0,20))
 
 
             partsLayerX = 2
             partsLayerY = 3
-            tkinter.Label(parentFrame,text="layer :").grid(column=partsLayerX,row=partsLayerY,padx=(10,0))
-            self.layer_entry = tkinter.Entry(parentFrame,width=15)
+            tkinter.Label(self.parameterWindow,text="layer :").grid(column=partsLayerX,row=partsLayerY,padx=(10,0))
+            self.layer_entry = tkinter.Entry(self.parameterWindow,width=15)
             self.layer_entry.grid(column=partsLayerX+1,row=partsLayerY,padx=(0,20))
 
             self.layer_entry.insert(tkinter.END,"1")
 
             partsUpdatebuttonY = partsCoordinateY+4
-            Update_button = tkinter.Button(parentFrame,text="UPDATE",command=self.updateParameter)
+            Update_button = tkinter.Button(self.parameterWindow,text="UPDATE",command=self.updateParameter)
             Update_button.grid(column=3,row=partsUpdatebuttonY)
 
 
             partsCancelbuttonY = partsCoordinateY+4
-            Cancelbutton = tkinter.Button(parentFrame,text="CANCEL",default=tkinter.ACTIVE)
+            Cancelbutton = tkinter.Button(self.parameterWindow,text="CANCEL",default=tkinter.ACTIVE,command=self.closeWindow)
             Cancelbutton.grid(column=2,row=partsUpdatebuttonY)
 
 
 
             partsOKbuttonY = partsCoordinateY+4
-            ok_button = tkinter.Button(parentFrame,text="  OK  ",default=tkinter.ACTIVE)
+            ok_button = tkinter.Button(self.parameterWindow,text="  OK  ",default=tkinter.ACTIVE)
             ok_button.grid(column=0,row=partsOKbuttonY,columnspan=2)
 
         elif(self.save_mode == "fillRectangle" or self.save_mode == "Rectangle"):
@@ -98,21 +98,21 @@ class ParameterWindow:
                 color=self.canvas.itemcget(id,"outline")
             partsCoordinateX=0
             partsCoordinateY=1
-            X0_Label = tkinter.Label(parentFrame,text="X0")
+            X0_Label = tkinter.Label(self.parameterWindow,text="X0")
             X0_Label.grid(column=partsCoordinateX,row=partsCoordinateY)
-            Y0_Label = tkinter.Label(parentFrame,text="Y0")
+            Y0_Label = tkinter.Label(self.parameterWindow,text="Y0")
             Y0_Label.grid(column=partsCoordinateX,row=partsCoordinateY+1)
-            X1_Label = tkinter.Label(parentFrame,text="X1")
+            X1_Label = tkinter.Label(self.parameterWindow,text="X1")
             X1_Label.grid(column=partsCoordinateX,row=partsCoordinateY+2)
-            Y1_Label = tkinter.Label(parentFrame,text="Y1")
+            Y1_Label = tkinter.Label(self.parameterWindow,text="Y1")
             Y1_Label.grid(column=partsCoordinateX,row=partsCoordinateY+3)
-            self.X0_entry = tkinter.Entry(parentFrame,width=10)
+            self.X0_entry = tkinter.Entry(self.parameterWindow,width=10)
             self.X0_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY)
-            self.Y0_entry = tkinter.Entry(parentFrame,width=10)
+            self.Y0_entry = tkinter.Entry(self.parameterWindow,width=10)
             self.Y0_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY+1)
-            self.X1_entry = tkinter.Entry(parentFrame,width=10)
+            self.X1_entry = tkinter.Entry(self.parameterWindow,width=10)
             self.X1_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY+2)
-            self.Y1_entry = tkinter.Entry(parentFrame,width=10)
+            self.Y1_entry = tkinter.Entry(self.parameterWindow,width=10)
             self.Y1_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY+3)
             #初期値の入力
             self.X0_entry.insert(tkinter.END,coordinate[0])
@@ -127,45 +127,45 @@ class ParameterWindow:
             partsIdX = 0
             partsIdY = 0
             Label_Id = "ID :   " + str(id)
-            tkinter.Label(parentFrame,text=Label_Id).grid(column=partsIdX,row=partsIdY,padx=(10,0))
+            tkinter.Label(self.parameterWindow,text=Label_Id).grid(column=partsIdX,row=partsIdY,padx=(10,0))
 
 
             partsColorX = 2
             partsColorY = 1
-            tkinter.Label(parentFrame,text="color :").grid(column=partsColorX,row=partsColorY,padx=(10,0))
-            self.color_entry = tkinter.Entry(parentFrame,width=15)
+            tkinter.Label(self.parameterWindow,text="color :").grid(column=partsColorX,row=partsColorY,padx=(10,0))
+            self.color_entry = tkinter.Entry(self.parameterWindow,width=15)
             self.color_entry.grid(column=partsColorX+1,row=partsColorY,padx=(0,20))
             #初期値の入力
             self.color_entry.insert(tkinter.END,color)
 
             partsTagX = 2
             partsTagY = 2
-            tkinter.Label(parentFrame,text="tag :").grid(column=partsTagX,row=partsTagY,padx=(10,0))
-            self.tag_entry = tkinter.Entry(parentFrame,width=15)
+            tkinter.Label(self.parameterWindow,text="tag :").grid(column=partsTagX,row=partsTagY,padx=(10,0))
+            self.tag_entry = tkinter.Entry(self.parameterWindow,width=15)
             self.tag_entry.grid(column=partsTagX+1,row=partsTagY,padx=(0,20))
 
 
             partsLayerX = 2
             partsLayerY = 3
-            tkinter.Label(parentFrame,text="layer :").grid(column=partsLayerX,row=partsLayerY,padx=(10,0))
-            self.layer_entry = tkinter.Entry(parentFrame,width=15)
+            tkinter.Label(self.parameterWindow,text="layer :").grid(column=partsLayerX,row=partsLayerY,padx=(10,0))
+            self.layer_entry = tkinter.Entry(self.parameterWindow,width=15)
             self.layer_entry.grid(column=partsLayerX+1,row=partsLayerY,padx=(0,20))
 
             self.layer_entry.insert(tkinter.END,"1")
 
             partsUpdatebuttonY = partsCoordinateY+4
-            Update_button = tkinter.Button(parentFrame,text="UPDATE",command=self.updateParameter)
+            Update_button = tkinter.Button(self.parameterWindow,text="UPDATE",command=self.updateParameter)
             Update_button.grid(column=3,row=partsUpdatebuttonY)
 
 
             partsCancelbuttonY = partsCoordinateY+4
-            Cancelbutton = tkinter.Button(parentFrame,text="CANCEL",default=tkinter.ACTIVE)
+            Cancelbutton = tkinter.Button(self.parameterWindow,text="CANCEL",default=tkinter.ACTIVE,command=self.closeWindow)
             Cancelbutton.grid(column=2,row=partsUpdatebuttonY)
 
 
 
             partsOKbuttonY = partsCoordinateY+4
-            ok_button = tkinter.Button(parentFrame,text="  OK  ",default=tkinter.ACTIVE)
+            ok_button = tkinter.Button(self.parameterWindow,text="  OK  ",default=tkinter.ACTIVE)
             ok_button.grid(column=0,row=partsOKbuttonY,columnspan=2)
 
         elif(self.save_mode == "fillOval" or self.save_mode == "Oval"):
@@ -176,21 +176,21 @@ class ParameterWindow:
                 color=self.canvas.itemcget(id,"outline")
             partsCoordinateX=0
             partsCoordinateY=1
-            X0_Label = tkinter.Label(parentFrame,text="X0")
+            X0_Label = tkinter.Label(self.parameterWindow,text="X0")
             X0_Label.grid(column=partsCoordinateX,row=partsCoordinateY)
-            Y0_Label = tkinter.Label(parentFrame,text="Y0")
+            Y0_Label = tkinter.Label(self.parameterWindow,text="Y0")
             Y0_Label.grid(column=partsCoordinateX,row=partsCoordinateY+1)
-            X1_Label = tkinter.Label(parentFrame,text="X1")
+            X1_Label = tkinter.Label(self.parameterWindow,text="X1")
             X1_Label.grid(column=partsCoordinateX,row=partsCoordinateY+2)
-            Y1_Label = tkinter.Label(parentFrame,text="Y1")
+            Y1_Label = tkinter.Label(self.parameterWindow,text="Y1")
             Y1_Label.grid(column=partsCoordinateX,row=partsCoordinateY+3)
-            self.X0_entry = tkinter.Entry(parentFrame,width=10)
+            self.X0_entry = tkinter.Entry(self.parameterWindow,width=10)
             self.X0_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY)
-            self.Y0_entry = tkinter.Entry(parentFrame,width=10)
+            self.Y0_entry = tkinter.Entry(self.parameterWindow,width=10)
             self.Y0_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY+1)
-            self.X1_entry = tkinter.Entry(parentFrame,width=10)
+            self.X1_entry = tkinter.Entry(self.parameterWindow,width=10)
             self.X1_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY+2)
-            self.Y1_entry = tkinter.Entry(parentFrame,width=10)
+            self.Y1_entry = tkinter.Entry(self.parameterWindow,width=10)
             self.Y1_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY+3)
             #初期値の入力
             self.X0_entry.insert(tkinter.END,coordinate[0])
@@ -201,46 +201,46 @@ class ParameterWindow:
             partsIdX = 0
             partsIdY = 0
             Label_Id = "ID :   " + str(id)
-            tkinter.Label(parentFrame,text=Label_Id).grid(column=partsIdX,row=partsIdY,padx=(10,0))
+            tkinter.Label(self.parameterWindow,text=Label_Id).grid(column=partsIdX,row=partsIdY,padx=(10,0))
 
 
             partsColorX = 2
             partsColorY = 1
-            tkinter.Label(parentFrame,text="color :").grid(column=partsColorX,row=partsColorY,padx=(10,0))
-            self.color_entry = tkinter.Entry(parentFrame,width=15)
+            tkinter.Label(self.parameterWindow,text="color :").grid(column=partsColorX,row=partsColorY,padx=(10,0))
+            self.color_entry = tkinter.Entry(self.parameterWindow,width=15)
             self.color_entry.grid(column=partsColorX+1,row=partsColorY,padx=(0,20))
             #初期値の入力
             self.color_entry.insert(tkinter.END,color)
 
             partsTagX = 2
             partsTagY = 2
-            tkinter.Label(parentFrame,text="tag :").grid(column=partsTagX,row=partsTagY,padx=(10,0))
-            self.tag_entry = tkinter.Entry(parentFrame,width=15)
+            tkinter.Label(self.parameterWindow,text="tag :").grid(column=partsTagX,row=partsTagY,padx=(10,0))
+            self.tag_entry = tkinter.Entry(self.parameterWindow,width=15)
             self.tag_entry.grid(column=partsTagX+1,row=partsTagY,padx=(0,20))
 
 
             partsLayerX = 2
             partsLayerY = 3
-            tkinter.Label(parentFrame,text="layer :").grid(column=partsLayerX,row=partsLayerY,padx=(10,0))
-            self.layer_entry = tkinter.Entry(parentFrame,width=15)
+            tkinter.Label(self.parameterWindow,text="layer :").grid(column=partsLayerX,row=partsLayerY,padx=(10,0))
+            self.layer_entry = tkinter.Entry(self.parameterWindow,width=15)
             self.layer_entry.grid(column=partsLayerX+1,row=partsLayerY,padx=(0,20))
 
             self.layer_entry.insert(tkinter.END,"1")
 
 
             partsUpdatebuttonY = partsCoordinateY+6
-            Update_button = tkinter.Button(parentFrame,text="UPDATE",command=self.updateParameter)
+            Update_button = tkinter.Button(self.parameterWindow,text="UPDATE",command=self.updateParameter)
             Update_button.grid(column=3,row=partsUpdatebuttonY)
 
 
             partsCancelbuttonY = partsCoordinateY+6
-            Cancelbutton = tkinter.Button(parentFrame,text="CANCEL",default=tkinter.ACTIVE)
+            Cancelbutton = tkinter.Button(self.parameterWindow,text="CANCEL",default=tkinter.ACTIVE)
             Cancelbutton.grid(column=2,row=partsUpdatebuttonY)
 
 
 
             partsOKbuttonY = partsCoordinateY+6
-            ok_button = tkinter.Button(parentFrame,text="  OK  ",default=tkinter.ACTIVE)
+            ok_button = tkinter.Button(self.parameterWindow,text="  OK  ",default=tkinter.ACTIVE)
             ok_button.grid(column=0,row=partsOKbuttonY,columnspan=2)
 
         elif(self.save_mode == "fillTriangle"):
@@ -248,29 +248,29 @@ class ParameterWindow:
             color=self.canvas.itemcget(id,"fill")
             partsCoordinateX=0
             partsCoordinateY=1
-            X0_Label = tkinter.Label(parentFrame,text="X0")
+            X0_Label = tkinter.Label(self.parameterWindow,text="X0")
             X0_Label.grid(column=partsCoordinateX,row=partsCoordinateY)
-            Y0_Label = tkinter.Label(parentFrame,text="Y0")
+            Y0_Label = tkinter.Label(self.parameterWindow,text="Y0")
             Y0_Label.grid(column=partsCoordinateX,row=partsCoordinateY+1)
-            X1_Label = tkinter.Label(parentFrame,text="X1")
+            X1_Label = tkinter.Label(self.parameterWindow,text="X1")
             X1_Label.grid(column=partsCoordinateX,row=partsCoordinateY+2)
-            Y1_Label = tkinter.Label(parentFrame,text="Y1")
+            Y1_Label = tkinter.Label(self.parameterWindow,text="Y1")
             Y1_Label.grid(column=partsCoordinateX,row=partsCoordinateY+3)
-            X2_Label = tkinter.Label(parentFrame,text="X2")
+            X2_Label = tkinter.Label(self.parameterWindow,text="X2")
             X2_Label.grid(column=partsCoordinateX,row=partsCoordinateY+4)
-            Y2_Label = tkinter.Label(parentFrame,text="Y2")
+            Y2_Label = tkinter.Label(self.parameterWindow,text="Y2")
             Y2_Label.grid(column=partsCoordinateX,row=partsCoordinateY+5)
-            self.X0_entry = tkinter.Entry(parentFrame,width=10)
+            self.X0_entry = tkinter.Entry(self.parameterWindow,width=10)
             self.X0_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY)
-            self.Y0_entry = tkinter.Entry(parentFrame,width=10)
+            self.Y0_entry = tkinter.Entry(self.parameterWindow,width=10)
             self.Y0_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY+1)
-            self.X1_entry = tkinter.Entry(parentFrame,width=10)
+            self.X1_entry = tkinter.Entry(self.parameterWindow,width=10)
             self.X1_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY+2)
-            self.Y1_entry = tkinter.Entry(parentFrame,width=10)
+            self.Y1_entry = tkinter.Entry(self.parameterWindow,width=10)
             self.Y1_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY+3)
-            self.X2_entry = tkinter.Entry(parentFrame,width=10)
+            self.X2_entry = tkinter.Entry(self.parameterWindow,width=10)
             self.X2_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY+4)
-            self.Y2_entry = tkinter.Entry(parentFrame,width=10)
+            self.Y2_entry = tkinter.Entry(self.parameterWindow,width=10)
             self.Y2_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY+5)
             #初期値の入力
             self.X0_entry.insert(tkinter.END,coordinate[0])
@@ -287,46 +287,46 @@ class ParameterWindow:
             partsIdX = 0
             partsIdY = 0
             Label_Id = "ID :   " + str(id)
-            tkinter.Label(parentFrame,text=Label_Id).grid(column=partsIdX,row=partsIdY,padx=(10,0))
+            tkinter.Label(self.parameterWindow,text=Label_Id).grid(column=partsIdX,row=partsIdY,padx=(10,0))
 
 
             partsColorX = 2
             partsColorY = 1
-            tkinter.Label(parentFrame,text="color :").grid(column=partsColorX,row=partsColorY,padx=(10,0))
-            self.color_entry = tkinter.Entry(parentFrame,width=15)
+            tkinter.Label(self.parameterWindow,text="color :").grid(column=partsColorX,row=partsColorY,padx=(10,0))
+            self.color_entry = tkinter.Entry(self.parameterWindow,width=15)
             self.color_entry.grid(column=partsColorX+1,row=partsColorY,padx=(0,20))
             #初期値の入力
             self.color_entry.insert(tkinter.END,color)
 
             partsTagX = 2
             partsTagY = 2
-            tkinter.Label(parentFrame,text="tag :").grid(column=partsTagX,row=partsTagY,padx=(10,0))
-            self.tag_entry = tkinter.Entry(parentFrame,width=15)
+            tkinter.Label(self.parameterWindow,text="tag :").grid(column=partsTagX,row=partsTagY,padx=(10,0))
+            self.tag_entry = tkinter.Entry(self.parameterWindow,width=15)
             self.tag_entry.grid(column=partsTagX+1,row=partsTagY,padx=(0,20))
 
 
             partsLayerX = 2
             partsLayerY = 3
-            tkinter.Label(parentFrame,text="layer :").grid(column=partsLayerX,row=partsLayerY,padx=(10,0))
-            self.layer_entry = tkinter.Entry(parentFrame,width=15)
+            tkinter.Label(self.parameterWindow,text="layer :").grid(column=partsLayerX,row=partsLayerY,padx=(10,0))
+            self.layer_entry = tkinter.Entry(self.parameterWindow,width=15)
             self.layer_entry.grid(column=partsLayerX+1,row=partsLayerY,padx=(0,20))
 
             self.layer_entry.insert(tkinter.END,"1")
 
 
             partsUpdatebuttonY = partsCoordinateY+6
-            Update_button = tkinter.Button(parentFrame,text="UPDATE",command=self.updateParameter)
+            Update_button = tkinter.Button(self.parameterWindow,text="UPDATE",command=self.updateParameter)
             Update_button.grid(column=3,row=partsUpdatebuttonY)
 
 
             partsCancelbuttonY = partsCoordinateY+6
-            Cancelbutton = tkinter.Button(parentFrame,text="CANCEL",default=tkinter.ACTIVE)
+            Cancelbutton = tkinter.Button(self.parameterWindow,text="CANCEL",default=tkinter.ACTIVE)
             Cancelbutton.grid(column=2,row=partsUpdatebuttonY)
 
 
 
             partsOKbuttonY = partsCoordinateY+6
-            ok_button = tkinter.Button(parentFrame,text="  OK  ",default=tkinter.ACTIVE)
+            ok_button = tkinter.Button(self.parameterWindow,text="  OK  ",default=tkinter.ACTIVE)
             ok_button.grid(column=0,row=partsOKbuttonY,columnspan=2)
 
 
@@ -486,3 +486,7 @@ class ParameterWindow:
             print("Error:no matching savve_mode    setParameter()")
 
         print("from patameterWindow",self.layer)
+
+    def closeWindow(self):
+        self.parameterWindow.destroy()
+        print("colloe closeWindow")
