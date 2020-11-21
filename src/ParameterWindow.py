@@ -84,10 +84,8 @@ class ParameterWindow:
             Cancelbutton = tkinter.Button(self.parameterWindow,text="CANCEL",default=tkinter.ACTIVE,command=self.closeWindow)
             Cancelbutton.grid(column=2,row=partsUpdatebuttonY)
 
-
-
             partsOKbuttonY = partsCoordinateY+4
-            ok_button = tkinter.Button(self.parameterWindow,text="  OK  ",default=tkinter.ACTIVE)
+            ok_button = tkinter.Button(self.parameterWindow,text="  OK  ",default=tkinter.ACTIVE,command= self.saveParameterWindow)
             ok_button.grid(column=0,row=partsOKbuttonY,columnspan=2)
 
         elif(self.save_mode == "fillRectangle" or self.save_mode == "Rectangle"):
@@ -119,9 +117,6 @@ class ParameterWindow:
             self.Y0_entry.insert(tkinter.END,coordinate[1])
             self.X1_entry.insert(tkinter.END,coordinate[2])
             self.Y1_entry.insert(tkinter.END,coordinate[3])
-
-
-
 
 
             partsIdX = 0
@@ -165,7 +160,7 @@ class ParameterWindow:
 
 
             partsOKbuttonY = partsCoordinateY+4
-            ok_button = tkinter.Button(self.parameterWindow,text="  OK  ",default=tkinter.ACTIVE)
+            ok_button = tkinter.Button(self.parameterWindow,text="  OK  ",default=tkinter.ACTIVE,command= self.saveParameterWindow)
             ok_button.grid(column=0,row=partsOKbuttonY,columnspan=2)
 
         elif(self.save_mode == "fillOval" or self.save_mode == "Oval"):
@@ -240,7 +235,7 @@ class ParameterWindow:
 
 
             partsOKbuttonY = partsCoordinateY+6
-            ok_button = tkinter.Button(self.parameterWindow,text="  OK  ",default=tkinter.ACTIVE)
+            ok_button = tkinter.Button(self.parameterWindow,text="  OK  ",default=tkinter.ACTIVE,command= self.saveParameterWindow)
             ok_button.grid(column=0,row=partsOKbuttonY,columnspan=2)
 
         elif(self.save_mode == "fillTriangle"):
@@ -280,10 +275,6 @@ class ParameterWindow:
             self.X2_entry.insert(tkinter.END,coordinate[4])
             self.Y2_entry.insert(tkinter.END,coordinate[5])
 
-
-
-
-
             partsIdX = 0
             partsIdY = 0
             Label_Id = "ID :   " + str(id)
@@ -313,34 +304,98 @@ class ParameterWindow:
 
             self.layer_entry.insert(tkinter.END,"1")
 
-
             partsUpdatebuttonY = partsCoordinateY+6
             Update_button = tkinter.Button(self.parameterWindow,text="UPDATE",command=self.updateParameter)
             Update_button.grid(column=3,row=partsUpdatebuttonY)
 
-
             partsCancelbuttonY = partsCoordinateY+6
-            Cancelbutton = tkinter.Button(self.parameterWindow,text="CANCEL",default=tkinter.ACTIVE)
+            Cancelbutton = tkinter.Button(self.parameterWindow,text="CANCEL",default=tkinter.ACTIVE,command=self.closeWindow)
             Cancelbutton.grid(column=2,row=partsUpdatebuttonY)
 
-
-
             partsOKbuttonY = partsCoordinateY+6
-            ok_button = tkinter.Button(self.parameterWindow,text="  OK  ",default=tkinter.ACTIVE)
+            ok_button = tkinter.Button(self.parameterWindow,text="  OK  ",default=tkinter.ACTIVE,command= self.saveParameterWindow)
             ok_button.grid(column=0,row=partsOKbuttonY,columnspan=2)
 
+        if(self.save_mode=="text"):
+            #color=self.canvas.itemcget(id,"fill")
+            #tkinter.Label(self.parameterWindow,text="coordinate").grid(column=0,row=0)
+            partsCoordinateX=0
+            partsCoordinateY=1
+            X0_Label = tkinter.Label(self.parameterWindow,text="X0")
+            X0_Label.grid(column=partsCoordinateX,row=partsCoordinateY)
+            Y0_Label = tkinter.Label(self.parameterWindow,text="Y0")
+            Y0_Label.grid(column=partsCoordinateX,row=partsCoordinateY+1)
 
+            self.X0_entry = tkinter.Entry(self.parameterWindow,width=10)
+            self.X0_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY)
+            self.Y0_entry = tkinter.Entry(self.parameterWindow,width=10)
+            self.Y0_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY+1)
+
+            #初期値の入力
+            self.X0_entry.insert(tkinter.END,coordinate[0])
+            self.Y0_entry.insert(tkinter.END,coordinate[1])
+
+            name_Label = tkinter.Label(self.parameterWindow,text = "text")
+            name_Label.grid(column=partsCoordinateX,row=partsCoordinateY+2)
+
+            self.name_entry = tkinter.Entry(self.parameterWindow,width = 10)
+            self.name_entry.grid(column=partsCoordinateX+1,row=partsCoordinateY+2)
+
+            partsIdX = 0
+            partsIdY = 0
+            Label_Id = "ID :   " + str(id)
+            tkinter.Label(self.parameterWindow,text=Label_Id).grid(column=partsIdX,row=partsIdY,padx=(10,0))
+
+            partsColorX = 2
+            partsColorY = 1
+            tkinter.Label(self.parameterWindow,text="color :").grid(column=partsColorX,row=partsColorY,padx=(10,0))
+            self.color_entry = tkinter.Entry(self.parameterWindow,width=15)
+            self.color_entry.grid(column=partsColorX+1,row=partsColorY,padx=(0,20))
+            #初期値の入力
+            color=self.canvas.itemcget(id,"fill")
+            self.color_entry.insert(tkinter.END,color)
+
+            partsTagX = 2
+            partsTagY = 2
+            tkinter.Label(self.parameterWindow,text="tag :").grid(column=partsTagX,row=partsTagY,padx=(10,0))
+            self.tag_entry = tkinter.Entry(self.parameterWindow,width=15)
+            self.tag_entry.grid(column=partsTagX+1,row=partsTagY,padx=(0,20))
+
+            partsLayerX = 2
+            partsLayerY = 3
+            tkinter.Label(self.parameterWindow,text="layer :").grid(column=partsLayerX,row=partsLayerY,padx=(10,0))
+            self.layer_entry = tkinter.Entry(self.parameterWindow,width=15)
+            self.layer_entry.grid(column=partsLayerX+1,row=partsLayerY,padx=(0,20))
+
+            partsLayerX = 2
+            partsLayerY = 4
+            tkinter.Label(self.parameterWindow,text="font :").grid(column=partsLayerX,row=partsLayerY,padx=(10,0))
+            self.font_entry = tkinter.Entry(self.parameterWindow,width=15)
+            self.font_entry.grid(column=partsLayerX+1,row=partsLayerY,padx=(0,20))
+            font=self.canvas.itemcget(id,"font")
+            font = font.strip('Courier')
+            font = font.strip('bold')
+            font = font.strip()
+            print("font",font)
+            self.font_entry.insert(tkinter.END,font)
+
+            self.layer_entry.insert(tkinter.END,"1")
+
+            partsUpdatebuttonY = partsCoordinateY+4
+            Update_button = tkinter.Button(self.parameterWindow,text="UPDATE",command=self.updateParameter)
+            Update_button.grid(column=3,row=partsUpdatebuttonY)
+
+
+            partsCancelbuttonY = partsCoordinateY+4
+            Cancelbutton = tkinter.Button(self.parameterWindow,text="CANCEL",default=tkinter.ACTIVE,command=self.closeWindow)
+            Cancelbutton.grid(column=2,row=partsUpdatebuttonY)
+
+            partsOKbuttonY = partsCoordinateY+4
+            ok_button = tkinter.Button(self.parameterWindow,text="  OK  ",default=tkinter.ACTIVE,command= self.saveParameterWindow)
+            ok_button.grid(column=0,row=partsOKbuttonY,columnspan=2)
 
         else:
-            print("Error:no matching savve_mode    makeWindow()")
-
-
-    def updateParameter(self):
-        parameter=self.getParameter_fromEntry()
-        self.setParameter(parameter[0],parameter[1])
-
-
-
+            print("Error:no matching savve_mode:",self.save_mode)
 
     def getParameter_fromEntry(self):
         parameter_dict={}
@@ -443,11 +498,35 @@ class ParameterWindow:
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             result.append("line")
             result.append(parameter_dict)
+
+        elif(self.save_mode == "text"):
+            X0=self.X0_entry.get()
+            Y0=self.Y0_entry.get()
+
+            coordinate.append(X0)
+            coordinate.append(Y0)
+            #coordinate=[int(x) for x in coordinate ]
+
+            text=self.name_entry.get()
+            font=self.font_entry.get()
+            print("font:",font)
+            tag=self.tag_entry.get()
+            color=self.color_entry.get()
+            layer=int(self.layer_entry.get())
+            #~~辞書データの生成　例:{'coords': ['70', '30', '180', '120'], 'tag': 'hello', 'color': '#000000', 'layer': '1'}~~~~~~~~~
+            parameter_dict["text"]=text
+            parameter_dict["font"]=font
+            parameter_dict["id"]=self.id
+            parameter_dict["coords"]=coordinate
+            parameter_dict["tag"]=tag
+            parameter_dict["color"]=color
+            parameter_dict["layer"]=layer
+            #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            result.append("text")
+            result.append(parameter_dict)
         else:
             print("Error:no matching savve_mode    getParameter_fromEntry()")
         return result
-
-
 
     def setParameter(self,mode,parameter):#parameterの型はdict 例:{'coords': ['70', '30', '180', '120'], 'tag': 'hello', 'color': '#000000', 'layer': '1'}
         if(self.save_mode == "Line"):
@@ -482,11 +561,31 @@ class ParameterWindow:
             else:
                 self.canvas.itemconfig(self.id,outline=color)
             self.layer[self.id]=parameter["layer"]
+        elif(self.save_mode == "text"):
+            coordinate=parameter["coords"]
+            self.canvas.coords(self.id,coordinate[0],coordinate[1])
+            tag=parameter["tag"]
+            self.canvas.itemconfig(self.id,tag=tag)
+            text=parameter["text"]
+            self.canvas.itemconfig(self.id,text=text)
+            font=parameter["font"]
+            self.canvas.itemconfig(self.id,font=font)
+            color=parameter["color"]
+            self.canvas.itemconfig(self.id,fill=color)
+            self.layer[self.id]=parameter["layer"]
         else:
             print("Error:no matching savve_mode    setParameter()")
 
         print("from patameterWindow",self.layer)
 
+    def updateParameter(self):
+        parameter=self.getParameter_fromEntry()
+        self.setParameter(parameter[0],parameter[1])
+
     def closeWindow(self):
         self.parameterWindow.destroy()
         print("colloe closeWindow")
+
+    def saveParameterWindow(self):
+        self.updateParameter()
+        self.parameterWindow.destroy()

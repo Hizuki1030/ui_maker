@@ -38,6 +38,8 @@ class Uimaker(tkinter.Frame):
         self.MainColor="#000000"
         self.previewColor="#000000"
 
+        self.zoom=0
+
 
         logging.disable(logging.CRITICAL)
 
@@ -45,7 +47,7 @@ class Uimaker(tkinter.Frame):
 
 
     def create_widgets(self):
-        self.make_canvas(240,240)
+        self.make_canvas(320,240)
 
         self.mouse_coordinate_label=tkinter.Label(self,textvariable=self.label_mouse_coordinate)#マウス座標確認用
         self.mouse_coordinate_label.grid(row=0, column=0,columnspan=1,rowspan=1)
@@ -75,6 +77,8 @@ class Uimaker(tkinter.Frame):
         self.draw_filltriangle_button = tkinter.Button(self,text = "fill triangle",command=self.fillTriangle,width = 10)#三角形描画ツールボタン
         self.draw_filltriangle_button.grid(row=6,column =0,sticky=tkinter.W)
 
+        self.draw_text_button = tkinter.Button(self,text = "text",command=self.drawText,width = 10)#テキストツールボタン
+        self.draw_text_button.grid(row=7,column =0,sticky=tkinter.W)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -99,6 +103,7 @@ class Uimaker(tkinter.Frame):
         self.canvas.bind('<B1-Motion>', self.func_B1_Motion)
         self.canvas.bind('<ButtonRelease>', self.draw)
         self.canvas.bind('<Motion>',self.set_mouse_coordinate)
+        #self.canvas.bind("<MouseWheel>", self.zoomer)
         #self.object_list.bind('<Double-1>',  self.object_property)
 
 
@@ -130,6 +135,7 @@ class Uimaker(tkinter.Frame):
         self.preview_mode="fillTriangle"
     def drawText(self):
         self.func_B1_Motion_mode="preview"
+        self.preview_mode="text"
         return 0
     def drawPicture(self):
         self.func_B1_Motion_mode="preview"
@@ -188,6 +194,12 @@ class Uimaker(tkinter.Frame):
                 self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.canvas.delete(self.id)
                 self.id=self.canvas.create_polygon(self.initial_x,self.initial_y,self.final_x,self.initial_y,(self.initial_x+self.final_x)/2,self.final_y,width=1,outline=self.previewColor)
+            elif(self.preview_mode == "text"):
+                self.final_x=self.change_nearestCoordinateX(event.x,self.minimum_pixelX)
+                self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
+                self.canvas.delete(self.id)
+                self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,fill=self.previewColor,outline=self.previewColor)
+
 #~~~~~~~~~クリックを離すとdrawが呼ばれるようになっている~~~~~~~~~~
 
     def draw(self,event):
@@ -205,6 +217,11 @@ class Uimaker(tkinter.Frame):
                 self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,fill=self.MainColor,outline=self.MainColor)
             elif(self.preview_mode == "fillOval"):
                 self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,fill=self.MainColor,outline=self.MainColor)
+            elif(self.preview_mode == "text"):
+                fontSize=abs(self.final_y-self.initial_y)
+                x=(self.initial_x+self.final_x)/2
+                y=(self.initial_y+self.final_y)/2
+                self.id=self.canvas.create_text( x , y ,text="あ",font=("Courier", fontSize , "bold"),fill=self.MainColor)
             else :
                 print("Error: preview is not define")
             self.parameterApp.makeWindow(self.id,self.preview_mode)
@@ -316,6 +333,18 @@ class Uimaker(tkinter.Frame):
                 print("settingLayer:",id)
                 self.canvas.lower(id)
 
+
+    """def zoomer(self,event):
+        sf = 1.1 if event.delta > 0 else 0.9
+        print(sf)
+        if(sf == 1.1):
+            self.zoom += 1
+        elif(sf == 0.9):
+            self.zoom -= 1
+
+        if(self.zoom >-1):
+            self.canvas.scale("all",event.x,event.y, sf, sf)
+            self.canvas.configure(scrollregion=self.canvas.bbox("all"))"""
 
 
 
