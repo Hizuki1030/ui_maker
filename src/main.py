@@ -5,6 +5,7 @@ import numpy as np
 import math
 import logging
 import ParameterWindow as PW
+import tkinter.font as tkFont
 class Uimaker(tkinter.Frame):
 
 
@@ -38,7 +39,6 @@ class Uimaker(tkinter.Frame):
         self.MainColor="#000000"
         self.previewColor="#000000"
 
-        self.zoom=0
 
 
         logging.disable(logging.CRITICAL)
@@ -48,8 +48,16 @@ class Uimaker(tkinter.Frame):
 
     def create_widgets(self):
         self.make_canvas(320,240)
-
-        self.mouse_coordinate_label=tkinter.Label(self,textvariable=self.label_mouse_coordinate)#マウス座標確認用
+        self.text_pic=tkinter.PhotoImage(file=r'./picture/text_pic.png')
+        self.fillTriangle_pic=tkinter.PhotoImage(file=r'./picture/fillTriangle_pic.png')
+        self.fillOval_pic=tkinter.PhotoImage(file=r'./picture/fillOval_pic.png')
+        self.fillRectangle_pic=tkinter.PhotoImage(file=r'./picture/fillRectangle_pic.png')
+        self.Oval_pic=tkinter.PhotoImage(file=r'./picture/Oval_pic.png')
+        self.Rectangle_pic=tkinter.PhotoImage(file=r'./picture/Rectangle_pic.png')
+        self.Line_pic=tkinter.PhotoImage(file=r'./picture/Line_pic.png')
+        print(self.text_pic)
+        fontStyle = tkFont.Font(family="Lucida Grande", size=10)
+        self.mouse_coordinate_label=tkinter.Label(self,textvariable=self.label_mouse_coordinate,font=fontStyle,width=6)#マウス座標確認用
         self.mouse_coordinate_label.grid(row=0, column=0,columnspan=1,rowspan=1)
         #現在動作なし==========================
         object_tags=[]
@@ -59,25 +67,25 @@ class Uimaker(tkinter.Frame):
         self.object_list = tkinter.Listbox(self, listvariable=object_tags,width=28, height=15)
         self.object_list.grid(row=1,column=6,columnspan=1,rowspan=7)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        self.draw_line_button = tkinter.Button(self, text='line',command = self.drawLine,width = 10)#直線描画ツールボタン
+        self.draw_line_button = tkinter.Button(self, text='line',command = self.drawLine,image= self.Line_pic)#直線描画ツールボタン
         self.draw_line_button.grid(row=1, column=0,sticky=tkinter.W)
 
-        self.draw_rectangle_button = tkinter.Button(self, text='rect',command = self.drawRectangle ,width = 10)#長方形描画ツール（塗りつぶしなし）ボタン
+        self.draw_rectangle_button = tkinter.Button(self, text='rect',command = self.drawRectangle ,image=self.Rectangle_pic)#長方形描画ツール（塗りつぶしなし）ボタン
         self.draw_rectangle_button.grid(row=3, column=0,sticky=tkinter.W)
 
-        self.draw_oval_button = tkinter.Button(self, text='oval',command = self.drawOval ,width = 10)#楕円描画ツール（塗りつぶしなし）ボタン
+        self.draw_oval_button = tkinter.Button(self, text='oval',command = self.drawOval ,image=self.Oval_pic)#楕円描画ツール（塗りつぶしなし）ボタン
         self.draw_oval_button.grid(row=2, column=0,sticky=tkinter.W)
 
-        self.draw_fillrectangle_button = tkinter.Button(self, text='fill rect',command = self.fillRectangle ,width = 10)#長方形描画ツール（塗りつぶし）ボタン
+        self.draw_fillrectangle_button = tkinter.Button(self, text='fill rect',command = self.fillRectangle ,image=self.fillRectangle_pic)#長方形描画ツール（塗りつぶし）ボタン
         self.draw_fillrectangle_button.grid(row=4, column=0,sticky=tkinter.W)
 
-        self.draw_filloval_button = tkinter.Button(self, text='fill oval',command = self.fillOval ,width = 10)#楕円描画ツール（塗りつぶし）ボタン
+        self.draw_filloval_button = tkinter.Button(self, text='fill oval',command = self.fillOval ,image=self.fillOval_pic)#楕円描画ツール（塗りつぶし）ボタン
         self.draw_filloval_button.grid(row=5, column=0,sticky=tkinter.W)
 
-        self.draw_filltriangle_button = tkinter.Button(self,text = "fill triangle",command=self.fillTriangle,width = 10)#三角形描画ツールボタン
+        self.draw_filltriangle_button = tkinter.Button(self,text = "",command=self.fillTriangle,image=self.fillTriangle_pic)#三角形描画ツールボタン
         self.draw_filltriangle_button.grid(row=6,column =0,sticky=tkinter.W)
 
-        self.draw_text_button = tkinter.Button(self,text = "text",command=self.drawText,width = 10)#テキストツールボタン
+        self.draw_text_button = tkinter.Button(self,text="",image=self.text_pic,command=self.drawText)#テキストツールボタン
         self.draw_text_button.grid(row=7,column =0,sticky=tkinter.W)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -221,13 +229,12 @@ class Uimaker(tkinter.Frame):
                 fontSize=abs(self.final_y-self.initial_y)
                 x=(self.initial_x+self.final_x)/2
                 y=(self.initial_y+self.final_y)/2
-                self.id=self.canvas.create_text( x , y ,text="あ",font=("Courier", fontSize , "bold"),fill=self.MainColor)
+                self.id=self.canvas.create_text( x , y ,text=" ",font=("Courier", fontSize , "bold"),fill=self.MainColor)
             else :
                 print("Error: preview is not define")
             self.parameterApp.makeWindow(self.id,self.preview_mode)
 
             self.preview_flag=False
-            print(self.layer)
 
 
     def Canvas_reset(self):#未実装
@@ -288,7 +295,7 @@ class Uimaker(tkinter.Frame):
 
             elif(type=="text"):
                 text = self.canvas.itemcget(id,"text")
-                fillColor = self.canvas.itemcget(id,"fg")
+                fillColor = self.canvas.itemcget(id,"fill")
                 component["text"]=text
                 component["fillColor"]=fillColor
             elif(type=="image"):
@@ -324,27 +331,10 @@ class Uimaker(tkinter.Frame):
         return coordinate
 
     def sortComponentsLayer(self):
-        print("call sortComponentsLayer")
-        layer_id={}
-        print(np.arange(1,max(self.layer.values())))
         for layer in np.arange(1,max(self.layer.values())+1):
             keys_id = [k for k, v in self.layer.items() if v == layer]
             for id in keys_id:
-                print("settingLayer:",id)
                 self.canvas.lower(id)
-
-
-    """def zoomer(self,event):
-        sf = 1.1 if event.delta > 0 else 0.9
-        print(sf)
-        if(sf == 1.1):
-            self.zoom += 1
-        elif(sf == 0.9):
-            self.zoom -= 1
-
-        if(self.zoom >-1):
-            self.canvas.scale("all",event.x,event.y, sf, sf)
-            self.canvas.configure(scrollregion=self.canvas.bbox("all"))"""
 
 
 

@@ -8,6 +8,7 @@ class ParameterWindow:
         self.canvas=canvas
         self.coodinate=[]
         self.save_mode=None
+        self.numparts=0
 
     def makeWindow(self,id,mode):
         self.id=id
@@ -19,6 +20,7 @@ class ParameterWindow:
         self.parameterWindow = tkinter.Toplevel(self.parent)
 
         if(self.save_mode=="Line"):
+            print("line mode running")
             color=self.canvas.itemcget(id,"fill")
             #tkinter.Label(self.parameterWindow,text="coordinate").grid(column=0,row=0)
             partsCoordinateX=0
@@ -65,6 +67,9 @@ class ParameterWindow:
             tkinter.Label(self.parameterWindow,text="tag :").grid(column=partsTagX,row=partsTagY,padx=(10,0))
             self.tag_entry = tkinter.Entry(self.parameterWindow,width=15)
             self.tag_entry.grid(column=partsTagX+1,row=partsTagY,padx=(0,20))
+            self.tag_entry.insert(tkinter.END,"part"+str(self.numparts))
+            self.numparts=self.numparts+1
+
 
 
             partsLayerX = 2
@@ -127,7 +132,7 @@ class ParameterWindow:
 
             partsColorX = 2
             partsColorY = 1
-            tkinter.Label(self.parameterWindow,text="color :").grid(column=partsColorX,row=partsColorY,padx=(10,0))
+            tkinter.Label(self.parameterWindow,text="color :",fg=color).grid(column=partsColorX,row=partsColorY,padx=(10,0))
             self.color_entry = tkinter.Entry(self.parameterWindow,width=15)
             self.color_entry.grid(column=partsColorX+1,row=partsColorY,padx=(0,20))
             #初期値の入力
@@ -138,6 +143,10 @@ class ParameterWindow:
             tkinter.Label(self.parameterWindow,text="tag :").grid(column=partsTagX,row=partsTagY,padx=(10,0))
             self.tag_entry = tkinter.Entry(self.parameterWindow,width=15)
             self.tag_entry.grid(column=partsTagX+1,row=partsTagY,padx=(0,20))
+            self.tag_entry.insert(tkinter.END,"part"+str(self.numparts))
+            self.numparts=self.numparts+1
+
+
 
 
             partsLayerX = 2
@@ -162,7 +171,6 @@ class ParameterWindow:
             partsOKbuttonY = partsCoordinateY+4
             ok_button = tkinter.Button(self.parameterWindow,text="  OK  ",default=tkinter.ACTIVE,command= self.saveParameterWindow)
             ok_button.grid(column=0,row=partsOKbuttonY,columnspan=2)
-
         elif(self.save_mode == "fillOval" or self.save_mode == "Oval"):
             color=None
             if(self.save_mode in "fill"):
@@ -212,6 +220,8 @@ class ParameterWindow:
             tkinter.Label(self.parameterWindow,text="tag :").grid(column=partsTagX,row=partsTagY,padx=(10,0))
             self.tag_entry = tkinter.Entry(self.parameterWindow,width=15)
             self.tag_entry.grid(column=partsTagX+1,row=partsTagY,padx=(0,20))
+            self.tag_entry.insert(tkinter.END,"part"+str(self.numparts))
+            self.numparts=self.numparts+1
 
 
             partsLayerX = 2
@@ -229,7 +239,7 @@ class ParameterWindow:
 
 
             partsCancelbuttonY = partsCoordinateY+6
-            Cancelbutton = tkinter.Button(self.parameterWindow,text="CANCEL",default=tkinter.ACTIVE)
+            Cancelbutton = tkinter.Button(self.parameterWindow,text="CANCEL",default=tkinter.ACTIVE,command=self.closeWindow)
             Cancelbutton.grid(column=2,row=partsUpdatebuttonY)
 
 
@@ -237,7 +247,6 @@ class ParameterWindow:
             partsOKbuttonY = partsCoordinateY+6
             ok_button = tkinter.Button(self.parameterWindow,text="  OK  ",default=tkinter.ACTIVE,command= self.saveParameterWindow)
             ok_button.grid(column=0,row=partsOKbuttonY,columnspan=2)
-
         elif(self.save_mode == "fillTriangle"):
             color=None
             color=self.canvas.itemcget(id,"fill")
@@ -294,6 +303,8 @@ class ParameterWindow:
             tkinter.Label(self.parameterWindow,text="tag :").grid(column=partsTagX,row=partsTagY,padx=(10,0))
             self.tag_entry = tkinter.Entry(self.parameterWindow,width=15)
             self.tag_entry.grid(column=partsTagX+1,row=partsTagY,padx=(0,20))
+            self.tag_entry.insert(tkinter.END,"part"+str(self.numparts))
+            self.numparts=self.numparts+1
 
 
             partsLayerX = 2
@@ -315,8 +326,7 @@ class ParameterWindow:
             partsOKbuttonY = partsCoordinateY+6
             ok_button = tkinter.Button(self.parameterWindow,text="  OK  ",default=tkinter.ACTIVE,command= self.saveParameterWindow)
             ok_button.grid(column=0,row=partsOKbuttonY,columnspan=2)
-
-        if(self.save_mode=="text"):
+        elif(self.save_mode=="text"):
             #color=self.canvas.itemcget(id,"fill")
             #tkinter.Label(self.parameterWindow,text="coordinate").grid(column=0,row=0)
             partsCoordinateX=0
@@ -360,6 +370,8 @@ class ParameterWindow:
             tkinter.Label(self.parameterWindow,text="tag :").grid(column=partsTagX,row=partsTagY,padx=(10,0))
             self.tag_entry = tkinter.Entry(self.parameterWindow,width=15)
             self.tag_entry.grid(column=partsTagX+1,row=partsTagY,padx=(0,20))
+            self.tag_entry.insert(tkinter.END,"part"+str(self.numparts))
+            self.numparts=self.numparts+1
 
             partsLayerX = 2
             partsLayerY = 3
@@ -376,7 +388,6 @@ class ParameterWindow:
             font = font.strip('Courier')
             font = font.strip('bold')
             font = font.strip()
-            print("font",font)
             self.font_entry.insert(tkinter.END,font)
 
             self.layer_entry.insert(tkinter.END,"1")
@@ -395,7 +406,7 @@ class ParameterWindow:
             ok_button.grid(column=0,row=partsOKbuttonY,columnspan=2)
 
         else:
-            print("Error:no matching savve_mode:",self.save_mode)
+            print("Error:makeWindow no matching save_mode:",self.save_mode)
 
     def getParameter_fromEntry(self):
         parameter_dict={}
@@ -508,14 +519,13 @@ class ParameterWindow:
             #coordinate=[int(x) for x in coordinate ]
 
             text=self.name_entry.get()
-            font=self.font_entry.get()
-            print("font:",font)
+            size=int(self.font_entry.get())
             tag=self.tag_entry.get()
             color=self.color_entry.get()
             layer=int(self.layer_entry.get())
             #~~辞書データの生成　例:{'coords': ['70', '30', '180', '120'], 'tag': 'hello', 'color': '#000000', 'layer': '1'}~~~~~~~~~
             parameter_dict["text"]=text
-            parameter_dict["font"]=font
+            parameter_dict["size"]=size
             parameter_dict["id"]=self.id
             parameter_dict["coords"]=coordinate
             parameter_dict["tag"]=tag
@@ -551,7 +561,6 @@ class ParameterWindow:
 
         elif(self.save_mode == "fillTriangle"):
             coordinate=parameter["coords"]
-            print("coods of triangle",coordinate)
             self.canvas.coords(self.id,coordinate[0],coordinate[1],coordinate[2],coordinate[3],coordinate[4],coordinate[5])
             tag=parameter["tag"]
             self.canvas.itemconfig(self.id,tag=tag)
@@ -568,23 +577,22 @@ class ParameterWindow:
             self.canvas.itemconfig(self.id,tag=tag)
             text=parameter["text"]
             self.canvas.itemconfig(self.id,text=text)
-            font=parameter["font"]
-            self.canvas.itemconfig(self.id,font=font)
+            size=parameter["size"]
+            self.canvas.itemconfig(self.id,font=("Courier",size))
             color=parameter["color"]
             self.canvas.itemconfig(self.id,fill=color)
             self.layer[self.id]=parameter["layer"]
         else:
-            print("Error:no matching savve_mode    setParameter()")
-
-        print("from patameterWindow",self.layer)
+            print("Error:no matching save_mode    setParameter()")
 
     def updateParameter(self):
         parameter=self.getParameter_fromEntry()
         self.setParameter(parameter[0],parameter[1])
 
     def closeWindow(self):
+        self.canvas.delete(self.id)
         self.parameterWindow.destroy()
-        print("colloe closeWindow")
+
 
     def saveParameterWindow(self):
         self.updateParameter()

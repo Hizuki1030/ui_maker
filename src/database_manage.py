@@ -81,7 +81,7 @@ class Database_manage:
             code.append(layer)
             x0=coordinate_data[0]#座標データの呼び出し((x0,y0)(x1,y1),,,,,,,)
             y0=coordinate_data[1]
-            code.append(self.Libray[Libray_name][type]+"("+str(string)+","+str(x0)+","+str(y0)+");"+"//"+str(name))
+            code.append(self.Libray[Libray_name][type]+"("+str(string)+","+str(x0)+","+str(y0)+");"+"//"+str(name)+"\n"+"M5.Lcd.setTextColor("+str(color)+");")
         elif(type== "image"):
             code.append(layer)
             x0=coordinate_data[0]#座標データの呼び出し((x0,y0)(x1,y1),,,,,,,)
@@ -141,7 +141,6 @@ class Database_manage:
 
     def colorChange_hex6_to_hex4(self,value):#組み込み向けのディスプレイを16進数を4桁で指定するがtkinterでは6桁で指定するのでカラーコードの変換が必要
         value = value.lstrip('#')
-        print("value",value)
         lv = len(value)
         RGB=tuple(int(value[i:i + lv // 3],base=16) for i in range(0, lv, lv // 3))#(x,x,x)
         red=int(RGB[0])
