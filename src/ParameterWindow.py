@@ -578,7 +578,7 @@ class ParameterWindow:
             text=parameter["text"]
             self.canvas.itemconfig(self.id,text=text)
             size=parameter["size"]
-            self.canvas.itemconfig(self.id,font=("Courier",size))
+            self.canvas.itemconfig(self.id,font=("Courier",size,"bold"))
             color=parameter["color"]
             self.canvas.itemconfig(self.id,fill=color)
             self.layer[self.id]=parameter["layer"]

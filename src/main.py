@@ -30,7 +30,8 @@ class Uimaker(tkinter.Frame):
         self.preview_mode=None
         self.minimum_pixelX=10
         self.minimum_pixelY=10
-        self.func_B1_Motion_mode="preview"
+        self.func_B1_Motion_mode=""
+        self.func_B1_mode=""
 
         self.layer={}#描画する度にレイヤー辞書にidとレイヤーをいれてい置く
 
@@ -48,6 +49,7 @@ class Uimaker(tkinter.Frame):
 
     def create_widgets(self):
         self.make_canvas(320,240)
+        #各ツールのアイコン画像を取得
         self.text_pic=tkinter.PhotoImage(file=r'./picture/text_pic.png')
         self.fillTriangle_pic=tkinter.PhotoImage(file=r'./picture/fillTriangle_pic.png')
         self.fillOval_pic=tkinter.PhotoImage(file=r'./picture/fillOval_pic.png')
@@ -55,7 +57,7 @@ class Uimaker(tkinter.Frame):
         self.Oval_pic=tkinter.PhotoImage(file=r'./picture/Oval_pic.png')
         self.Rectangle_pic=tkinter.PhotoImage(file=r'./picture/Rectangle_pic.png')
         self.Line_pic=tkinter.PhotoImage(file=r'./picture/Line_pic.png')
-        print(self.text_pic)
+
         fontStyle = tkFont.Font(family="Lucida Grande", size=10)
         self.mouse_coordinate_label=tkinter.Label(self,textvariable=self.label_mouse_coordinate,font=fontStyle,width=6)#マウス座標確認用
         self.mouse_coordinate_label.grid(row=0, column=0,columnspan=1,rowspan=1)
@@ -108,9 +110,13 @@ class Uimaker(tkinter.Frame):
         self.export_button = tkinter.Button(self, text='save', command = self.export_xmlfile)#保存ボタン
         self.export_button.grid(row=0, column=6,columnspan=1,rowspan=1)
 
+        self.export_button = tkinter.Button(self, text='Edit', command = self.ObjectEdit)#保存ボタン
+        self.export_button.grid(row=0, column=7,columnspan=1,rowspan=1)
+
         self.canvas.bind('<B1-Motion>', self.func_B1_Motion)
         self.canvas.bind('<ButtonRelease>', self.draw)
         self.canvas.bind('<Motion>',self.set_mouse_coordinate)
+        self.canvas.bind("<ButtonPress>",self.func_B1)
         #self.canvas.bind("<MouseWheel>", self.zoomer)
         #self.object_list.bind('<Double-1>',  self.object_property)
 
@@ -164,6 +170,19 @@ class Uimaker(tkinter.Frame):
         color = colorchooser.askcolor(title="Main color")
         self.MainColor=color[1]
 
+    def ObjectEdit(self):
+        self.func_B1_mode="ObjectEdit"
+
+
+    def func_B1(self,event):
+        if(self.func_B1_mode == "ObjectEdit"):
+            x,y=event.x,event.y
+            Objects = self.canvas.find_overlapping(x,y,x,y)
+            selectObject=Objects[-1]#一番上にあるオブジェクトを選択
+            print(selectObject) # ['en_1 current']
+            self.box=self.canvas.create_rectangle(self.canvas.bbox(selectObject),width=4,dash=1,outline=self.previewColor)
+
+        return 0
 
     def func_B1_Motion(self,event):
         if(self.func_B1_Motion_mode == "preview"):
@@ -211,30 +230,33 @@ class Uimaker(tkinter.Frame):
 #~~~~~~~~~クリックを離すとdrawが呼ばれるようになっている~~~~~~~~~~
 
     def draw(self,event):
-        if(self.preview_flag==True):
-            self.canvas.delete(self.id)
-            if(self.preview_mode == "Line"):
-                self.id=self.canvas.create_line(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,fill=self.MainColor)
-            elif(self.preview_mode == "Rectangle"):
-                self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,outline=self.MainColor)
-            elif(self.preview_mode == "Oval"):
-                self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,outline=self.MainColor)
-            elif(self.preview_mode == "fillTriangle"):
-                self.id=self.canvas.create_polygon(self.initial_x,self.initial_y,self.final_x,self.initial_y,(self.initial_x+self.final_x)/2,self.final_y,fill=self.MainColor)
-            elif(self.preview_mode == "fillRectangle"):
-                self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,fill=self.MainColor,outline=self.MainColor)
-            elif(self.preview_mode == "fillOval"):
-                self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,fill=self.MainColor,outline=self.MainColor)
-            elif(self.preview_mode == "text"):
-                fontSize=abs(self.final_y-self.initial_y)
-                x=(self.initial_x+self.final_x)/2
-                y=(self.initial_y+self.final_y)/2
-                self.id=self.canvas.create_text( x , y ,text=" ",font=("Courier", fontSize , "bold"),fill=self.MainColor)
-            else :
-                print("Error: preview is not define")
-            self.parameterApp.makeWindow(self.id,self.preview_mode)
+        if(self.func_B1_Motion_mode == "preview"):
+            if(self.preview_flag==True):
+                self.canvas.delete(self.id)
+                if(self.preview_mode == "Line"):
+                    self.id=self.canvas.create_line(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,fill=self.MainColor)
+                elif(self.preview_mode == "Rectangle"):
+                    self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,outline=self.MainColor)
+                elif(self.preview_mode == "Oval"):
+                    self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,outline=self.MainColor)
+                elif(self.preview_mode == "fillTriangle"):
+                    self.id=self.canvas.create_polygon(self.initial_x,self.initial_y,self.final_x,self.initial_y,(self.initial_x+self.final_x)/2,self.final_y,fill=self.MainColor)
+                elif(self.preview_mode == "fillRectangle"):
+                    self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,fill=self.MainColor,outline=self.MainColor)
+                elif(self.preview_mode == "fillOval"):
+                    self.id=self.canvas.create_oval(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,fill=self.MainColor,outline=self.MainColor)
+                elif(self.preview_mode == "text"):
+                    fontSize=abs(self.final_y-self.initial_y)
+                    x=(self.initial_x+self.final_x)/2
+                    y=(self.initial_y+self.final_y)/2
+                    self.id=self.canvas.create_text( x , y ,text=" ",font=("Courier", fontSize , "bold"),fill=self.MainColor)
+                else :
+                    print("Error: preview is not define")
 
-            self.preview_flag=False
+                self.canvas.tag_bind(self.id,"<Double-1>",)
+                self.parameterApp.makeWindow(self.id,self.preview_mode)
+                self.preview_flag=False
+            #elif(self.func_B1_Motion_mode == ""):
 
 
     def Canvas_reset(self):#未実装
