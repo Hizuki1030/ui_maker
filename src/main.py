@@ -32,6 +32,9 @@ class Uimaker(tkinter.Frame):
         self.minimum_pixelY=10
         self.func_B1_Motion_mode=""
         self.func_B1_mode=""
+        self.adjointBox_id=None
+        self.selectObjectNum=-1
+        self.selectObjectMax=0
 
         self.layer={}#描画する度にレイヤー辞書にidとレイヤーをいれてい置く
 
@@ -110,13 +113,20 @@ class Uimaker(tkinter.Frame):
         self.export_button = tkinter.Button(self, text='save', command = self.export_xmlfile)#保存ボタン
         self.export_button.grid(row=0, column=6,columnspan=1,rowspan=1)
 
-        self.export_button = tkinter.Button(self, text='Edit', command = self.ObjectEdit)#保存ボタン
+        self.export_button = tkinter.Button(self, text='select', command = self.selectObject_func)#オブジェクト選択モード
         self.export_button.grid(row=0, column=7,columnspan=1,rowspan=1)
 
+        self.export_button = tkinter.Button(self, text='info', command = self.infomationObject)#選択されたオブジェクトのパラメータ設定ウィンドウを開く
+        self.export_button.grid(row=1, column=7,columnspan=1,rowspan=1)
+
+        self.export_button = tkinter.Button(self, text='move', command = self.ObjectMove_func)#選択されたオブジェクトのパラメータ設定ウィンドウを開く
+        self.export_button.grid(row=2, column=7,columnspan=1,rowspan=1)
+
         self.canvas.bind('<B1-Motion>', self.func_B1_Motion)
-        self.canvas.bind('<ButtonRelease>', self.draw)
+        self.canvas.bind('<ButtonRelease-1>', self.draw)
         self.canvas.bind('<Motion>',self.set_mouse_coordinate)
-        self.canvas.bind("<ButtonPress>",self.func_B1)
+        self.canvas.bind("<Button-1>",self.func_B1)
+        self.canvas.bind('<MouseWheel>',self.func_shift)
         #self.canvas.bind("<MouseWheel>", self.zoomer)
         #self.object_list.bind('<Double-1>',  self.object_property)
 
@@ -170,18 +180,60 @@ class Uimaker(tkinter.Frame):
         color = colorchooser.askcolor(title="Main color")
         self.MainColor=color[1]
 
-    def ObjectEdit(self):
-        self.func_B1_mode="ObjectEdit"
+    def selectObject_func(self):
+        self.func_B1_mode="selectObject"
+
+    def infomationObject(self):
+        type_attach={"rectangle":"Rectangle","oval":"Oval","line":"Line","polygon":"Triangle","text":"text"}
+        type=self.canvas.type(self.selectObject)
+        fill=self.canvas.itemcget(self.selectObject,"fill")
+        type=type_attach[type]
+        if(len(fill) >0 ):
+            type="fill"+type
+        self.parameterApp.makeWindow(self.selectObject,type)
+
+    def ObjectMove_func(self):
+        self.func_B1_Motion_mode="ObjectMove"
 
 
     def func_B1(self,event):
-        if(self.func_B1_mode == "ObjectEdit"):
-            x,y=event.x,event.y
-            Objects = self.canvas.find_overlapping(x,y,x,y)
-            selectObject=Objects[-1]#一番上にあるオブジェクトを選択
-            print(selectObject) # ['en_1 current']
-            self.box=self.canvas.create_rectangle(self.canvas.bbox(selectObject),width=4,dash=1,outline=self.previewColor)
+        if(self.func_B1_mode == "selectObject"):
+            self.canvas.delete(self.adjointBox_id)
 
+            self.selectObject_x,self.selectObject_y=event.x,event.y
+            x,y = self.selectObject_x,self.selectObject_y
+
+            Objects = self.canvas.find_overlapping(x-2,y-2,x+2,y+2)
+            self.selectObjectMax=len(Objects)
+            self.selectObject=Objects[-1]#一番上にあるオブジェクトを選択
+            print(self.selectObject) # ['en_1 current']
+            selectObjectCoordinate=self.canvas.bbox(self.selectObject)
+            self.adjointBox_id=self.canvas.create_rectangle(selectObjectCoordinate[0]-2
+                                                ,selectObjectCoordinate[1]-2
+                                                ,selectObjectCoordinate[2]+2
+                                                ,selectObjectCoordinate[3]+2
+                                                ,width=1
+                                                ,dash=2
+                                                ,outline=self.previewColor)
+
+    def func_shift(self,event):
+        if(self.func_B1_mode == "selectObject"):
+            self.canvas.delete(self.adjointBox_id)
+            x,y = self.selectObject_x,self.selectObject_y
+            self.selectObjectNum=self.selectObjectNum+1
+            if(self.selectObjectNum==self.selectObjectMax):
+                self.selectObjectNum=-1
+            Objects = self.canvas.find_overlapping(x-2,y-2,x+2,y+2)
+            self.selectObject=Objects[self.selectObjectNum]#一番上にあるオブジェクトを選択
+            print(self.selectObject) # ['en_1 current']
+            selectObjectCoordinate=self.canvas.bbox(self.selectObject)
+            self.adjointBox_id=self.canvas.create_rectangle(selectObjectCoordinate[0]-2
+                                                ,selectObjectCoordinate[1]-2
+                                                ,selectObjectCoordinate[2]+2
+                                                ,selectObjectCoordinate[3]+2
+                                                ,width=1
+                                                ,dash=2
+                                                ,outline=self.previewColor)
         return 0
 
     def func_B1_Motion(self,event):
@@ -226,6 +278,17 @@ class Uimaker(tkinter.Frame):
                 self.final_y=self.change_nearestCoordinateY(event.y,self.minimum_pixelY)
                 self.canvas.delete(self.id)
                 self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,fill=self.previewColor,outline=self.previewColor)
+        elif(self.func_B1_Motion_mode == "ObjectMove"):
+            x,y=event.x,event.y
+            x=self.change_justCoordinateX(x,10)
+            y=self.change_justCoordinateY(y,10)
+            Object_coordinate=self.canvas.coords(self.selectObject)
+            type=self.canvas.type(self.selectObject)
+            if(type == "rectangle" or type == "line" or type == "oval"):
+                dx=Object_coordinate[2]-Object_coordinate[0]
+                dy=Object_coordinate[3]-Object_coordinate[1]
+                self.canvas.coords(self.selectObject,x-dx/2,y-dy/2,x+dx/2,y+dy/2)
+                self.canvas.coords(self.adjointBox_id,(x-dx/2)-2,(y-dy/2)-2,(x+dx/2)+2,(y+dy/2)+2)
 
 #~~~~~~~~~クリックを離すとdrawが呼ばれるようになっている~~~~~~~~~~
 
@@ -253,7 +316,6 @@ class Uimaker(tkinter.Frame):
                 else :
                     print("Error: preview is not define")
 
-                self.canvas.tag_bind(self.id,"<Double-1>",)
                 self.parameterApp.makeWindow(self.id,self.preview_mode)
                 self.preview_flag=False
             #elif(self.func_B1_Motion_mode == ""):
@@ -279,6 +341,7 @@ class Uimaker(tkinter.Frame):
 
     def export_canvas_components(self):
         Canvas_data={}
+        self.delete_adjoint()
         for id in self.canvas.find_all():
             component={}
             image=""
@@ -329,7 +392,6 @@ class Uimaker(tkinter.Frame):
         return Canvas_data
 
     def change_nearestCoordinateX(self,coordinate,minimum_pixel):#minimum_pixelを最小単位として指定する座標を選択する
-        coodinate=0
         if(coordinate > self.width):
             coordinate=self.width
         elif(coordinate < 0):
@@ -341,7 +403,6 @@ class Uimaker(tkinter.Frame):
         return coordinate
 
     def change_nearestCoordinateY(self,coordinate,minimum_pixel):#minimum_pixelを最小単位として指定する座標を選択する
-        coodinate = 0
         if(coordinate > self.height):
             coordinate=self.height
         elif(coordinate < 0):
@@ -352,11 +413,41 @@ class Uimaker(tkinter.Frame):
             coordinate = y[index]
         return coordinate
 
+    def change_justCoordinateX(self,coordinate,minimum_pixel):
+        if(coordinate > self.width):
+            coordinate=self.width
+        elif(coordinate < 0):
+            coordinate=0
+        else:
+            x=np.arange(0,self.width+minimum_pixel,minimum_pixel)
+            index=int(coordinate/minimum_pixel)
+            coordinate =  x[index]
+
+        return coordinate
+
+    def change_justCoordinateY(self,coordinate,minimum_pixel):
+        if(coordinate > self.height):
+            coordinate=self.height
+        elif(coordinate < 0):
+            coordinate=0
+        else:
+            y=np.arange(0,self.height+minimum_pixel,minimum_pixel)
+            index=int(coordinate/minimum_pixel)
+            coordinate = y[index]
+
+        return coordinate
+
     def sortComponentsLayer(self):
         for layer in np.arange(1,max(self.layer.values())+1):
             keys_id = [k for k, v in self.layer.items() if v == layer]
             for id in keys_id:
-                self.canvas.lower(id)
+                self.canvas.lower(id)#layer順にオブジェクトを再配置
+
+    def delete_adjoint(self):
+        self.canvas.delete(self.adjointBox_id)#補助線を消去
+
+    def StopFunc_select(self):
+        return 0;
 
 
 

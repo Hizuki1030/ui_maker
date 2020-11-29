@@ -51,7 +51,10 @@ class ParameterWindow:
             partsIdX = 0
             partsIdY = 0
             Label_Id = "ID :   " + str(id)
+            Label_Id = "ID :   " + str(id)
             tkinter.Label(self.parameterWindow,text=Label_Id).grid(column=partsIdX,row=partsIdY,padx=(10,0))
+            tkinter.Label(self.parameterWindow,text=self.save_mode).grid(column=partsIdX+1,row=partsIdY,padx=(10,0))
+
 
 
             partsColorX = 2
@@ -95,7 +98,7 @@ class ParameterWindow:
 
         elif(self.save_mode == "fillRectangle" or self.save_mode == "Rectangle"):
             color=None
-            if(self.save_mode in "fill"):
+            if("fill" in self.save_mode):
                 color=self.canvas.itemcget(id,"fill")
             else:
                 color=self.canvas.itemcget(id,"outline")
@@ -127,7 +130,9 @@ class ParameterWindow:
             partsIdX = 0
             partsIdY = 0
             Label_Id = "ID :   " + str(id)
+            Label_Id = "ID :   " + str(id)
             tkinter.Label(self.parameterWindow,text=Label_Id).grid(column=partsIdX,row=partsIdY,padx=(10,0))
+            tkinter.Label(self.parameterWindow,text=self.save_mode).grid(column=partsIdX+1,row=partsIdY,padx=(10,0))
 
 
             partsColorX = 2
@@ -173,7 +178,7 @@ class ParameterWindow:
             ok_button.grid(column=0,row=partsOKbuttonY,columnspan=2)
         elif(self.save_mode == "fillOval" or self.save_mode == "Oval"):
             color=None
-            if(self.save_mode in "fill"):
+            if("fill" in self.save_mode):
                 color=self.canvas.itemcget(id,"fill")
             else:
                 color=self.canvas.itemcget(id,"outline")
@@ -204,7 +209,9 @@ class ParameterWindow:
             partsIdX = 0
             partsIdY = 0
             Label_Id = "ID :   " + str(id)
+            Label_Id = "ID :   " + str(id)
             tkinter.Label(self.parameterWindow,text=Label_Id).grid(column=partsIdX,row=partsIdY,padx=(10,0))
+            tkinter.Label(self.parameterWindow,text=self.save_mode).grid(column=partsIdX+1,row=partsIdY,padx=(10,0))
 
 
             partsColorX = 2
@@ -288,6 +295,7 @@ class ParameterWindow:
             partsIdY = 0
             Label_Id = "ID :   " + str(id)
             tkinter.Label(self.parameterWindow,text=Label_Id).grid(column=partsIdX,row=partsIdY,padx=(10,0))
+            tkinter.Label(self.parameterWindow,text=self.save_mode).grid(column=partsIdX+1,row=partsIdY,padx=(10,0))
 
 
             partsColorX = 2
@@ -355,6 +363,7 @@ class ParameterWindow:
             partsIdY = 0
             Label_Id = "ID :   " + str(id)
             tkinter.Label(self.parameterWindow,text=Label_Id).grid(column=partsIdX,row=partsIdY,padx=(10,0))
+            tkinter.Label(self.parameterWindow,text=self.save_mode).grid(column=partsIdX+1,row=partsIdY,padx=(10,0))
 
             partsColorX = 2
             partsColorY = 1
@@ -457,7 +466,7 @@ class ParameterWindow:
             parameter_dict["color"]=color
             parameter_dict["layer"]=layer
             #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            result.append("line")
+            result.append(self.save_mode)
             result.append(parameter_dict)
         elif(self.save_mode == "fillOval" or self.save_mode == "Oval"):
             X0=self.X0_entry.get()
@@ -553,8 +562,10 @@ class ParameterWindow:
             tag=parameter["tag"]
             self.canvas.itemconfig(self.id,tag=tag)
             color=parameter["color"]
-            if(self.save_mode in "fill"):
+            print("infill:",self.save_mode)
+            if("fill" in self.save_mode):
                 self.canvas.itemconfig(self.id,fill=color)
+                self.canvas.itemconfig(self.id,outline=color)
             else:
                 self.canvas.itemconfig(self.id,outline=color)
             self.layer[self.id]=parameter["layer"]
@@ -565,8 +576,9 @@ class ParameterWindow:
             tag=parameter["tag"]
             self.canvas.itemconfig(self.id,tag=tag)
             color=parameter["color"]
-            if(self.save_mode in "fill"):
+            if("fill" in self.save_mode):
                 self.canvas.itemconfig(self.id,fill=color)
+                self.canvas.itemconfig(self.id,outline=color)
             else:
                 self.canvas.itemconfig(self.id,outline=color)
             self.layer[self.id]=parameter["layer"]
@@ -587,6 +599,7 @@ class ParameterWindow:
 
     def updateParameter(self):
         parameter=self.getParameter_fromEntry()
+        print("updateParameter:",parameter[0])
         self.setParameter(parameter[0],parameter[1])
 
     def closeWindow(self):
