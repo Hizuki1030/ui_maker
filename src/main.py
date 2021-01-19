@@ -121,12 +121,15 @@ class Uimaker(tkinter.Frame):
 
         self.export_button = tkinter.Button(self, text='move', command = self.ObjectMove_func)#選択されたオブジェクトのパラメータ設定ウィンドウを開く
         self.export_button.grid(row=2, column=7,columnspan=1,rowspan=1)
+        self.export_button.focus_set()
 
         self.canvas.bind('<B1-Motion>', self.func_B1_Motion)
         self.canvas.bind('<ButtonRelease-1>', self.draw)
         self.canvas.bind('<Motion>',self.set_mouse_coordinate)
         self.canvas.bind("<Button-1>",self.func_B1)
         self.canvas.bind('<MouseWheel>',self.func_shift)
+        self.master.bind("<a>",self.ObjectMove_func)
+        
         #self.canvas.bind("<MouseWheel>", self.zoomer)
         #self.object_list.bind('<Double-1>',  self.object_property)
 
@@ -181,9 +184,13 @@ class Uimaker(tkinter.Frame):
         self.MainColor=color[1]
 
     def selectObject_func(self):
+        print("called")
+        self.func_B1_Motion_mode = ""
         self.func_B1_mode="selectObject"
 
     def infomationObject(self):
+        self.func_B1_Motion_mode = ""
+        self.func_B1_mode="selectObject"
         type_attach={"rectangle":"Rectangle","oval":"Oval","line":"Line","polygon":"Triangle","text":"text"}
         type=self.canvas.type(self.selectObject)
         fill=self.canvas.itemcget(self.selectObject,"fill")
@@ -192,7 +199,9 @@ class Uimaker(tkinter.Frame):
             type="fill"+type
         self.parameterApp.makeWindow(self.selectObject,type)
 
-    def ObjectMove_func(self):
+    def ObjectMove_func(self,event):
+        print("called")
+        self.func_B1_mode= ""
         self.func_B1_Motion_mode="ObjectMove"
 
 
@@ -205,10 +214,11 @@ class Uimaker(tkinter.Frame):
 
             Objects = self.canvas.find_overlapping(x-2,y-2,x+2,y+2)
             self.selectObjectMax=len(Objects)
-            self.selectObject=Objects[-1]#一番上にあるオブジェクトを選択
-            print(self.selectObject) # ['en_1 current']
-            selectObjectCoordinate=self.canvas.bbox(self.selectObject)
-            self.adjointBox_id=self.canvas.create_rectangle(selectObjectCoordinate[0]-2
+            if(self.selectObjectMax > 0):
+                self.selectObject=Objects[-1]#一番上にあるオブジェクトを選択
+                print(self.selectObject) # ['en_1 current']
+                selectObjectCoordinate=self.canvas.bbox(self.selectObject)
+                self.adjointBox_id=self.canvas.create_rectangle(selectObjectCoordinate[0]-2
                                                 ,selectObjectCoordinate[1]-2
                                                 ,selectObjectCoordinate[2]+2
                                                 ,selectObjectCoordinate[3]+2
@@ -279,6 +289,7 @@ class Uimaker(tkinter.Frame):
                 self.canvas.delete(self.id)
                 self.id=self.canvas.create_rectangle(self.initial_x,self.initial_y,self.final_x,self.final_y,width=1,dash=1,fill=self.previewColor,outline=self.previewColor)
         elif(self.func_B1_Motion_mode == "ObjectMove"):
+            self.func_B1_mode = ""
             x,y=event.x,event.y
             x=self.change_justCoordinateX(x,10)
             y=self.change_justCoordinateY(y,10)
@@ -318,7 +329,6 @@ class Uimaker(tkinter.Frame):
 
                 self.parameterApp.makeWindow(self.id,self.preview_mode)
                 self.preview_flag=False
-            #elif(self.func_B1_Motion_mode == ""):
 
 
     def Canvas_reset(self):#未実装
@@ -448,6 +458,11 @@ class Uimaker(tkinter.Frame):
 
     def StopFunc_select(self):
         return 0;
+
+    def AllModeOff(self):
+        self.func_B1_Motion_mode=""
+        self.func_B1_mode=""
+        
 
 
 
