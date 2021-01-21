@@ -98,8 +98,6 @@ class Uimaker(tkinter.Frame):
         self.clear_button = tkinter.Button(self, text='clear all',command= self.Canvas_reset)#キャンバスリセット
         self.clear_button.grid(row=0, column=1,columnspan=1,rowspan=1)
 
-        self.delete_object_button = tkinter.Button(self, text='delete', command = self.Delete_componets)#消去ボタン
-        self.delete_object_button.grid(row=0, column=2,columnspan=1,rowspan=1)
 
         self.color_label = tkinter.Label(self, text='Color :')
         self.color_label.grid(row=0, column=3,columnspan=1,rowspan=1,sticky=tkinter.E)
@@ -128,7 +126,12 @@ class Uimaker(tkinter.Frame):
         self.canvas.bind('<Motion>',self.set_mouse_coordinate)
         self.canvas.bind("<Button-1>",self.func_B1)
         self.canvas.bind('<MouseWheel>',self.func_shift)
-        self.master.bind("<a>",self.ObjectMove_func)
+        self.master.bind("<s>",self.selectObject_func)
+        self.master.bind("<w>",self.ObjectMove_func)
+        self.master.bind("<q>",self.delete_adjoint)
+
+        self.master.bind("<d>",self.Delete_object)        
+        
         
         #self.canvas.bind("<MouseWheel>", self.zoomer)
         #self.object_list.bind('<Double-1>',  self.object_property)
@@ -183,12 +186,12 @@ class Uimaker(tkinter.Frame):
         color = colorchooser.askcolor(title="Main color")
         self.MainColor=color[1]
 
-    def selectObject_func(self):
+    def selectObject_func(self,evnet):
         print("called")
         self.func_B1_Motion_mode = ""
         self.func_B1_mode="selectObject"
 
-    def infomationObject(self):
+    def infomationObject(self,event):
         self.func_B1_Motion_mode = ""
         self.func_B1_mode="selectObject"
         type_attach={"rectangle":"Rectangle","oval":"Oval","line":"Line","polygon":"Triangle","text":"text"}
@@ -334,8 +337,10 @@ class Uimaker(tkinter.Frame):
     def Canvas_reset(self):#未実装
         self.sortComponentsLayer()
 
-    def Delete_componets(self):#未実装
-        return 0
+    def Delete_object(self,event):#未実装
+        self.canvas.delete(self.selectObject)
+        self.layer.pop(self.selectObject)
+        
     def set_mouse_coordinate(self,event):
         mouse_X=event.x
         mouse_Y=event.y
@@ -453,7 +458,7 @@ class Uimaker(tkinter.Frame):
             for id in keys_id:
                 self.canvas.lower(id)#layer順にオブジェクトを再配置
 
-    def delete_adjoint(self):
+    def delete_adjoint(self,event):
         self.canvas.delete(self.adjointBox_id)#補助線を消去
 
     def StopFunc_select(self):
