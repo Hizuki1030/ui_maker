@@ -43,6 +43,8 @@ class Uimaker(tkinter.Frame):
         self.MainColor="#000000"
         self.previewColor="#000000"
 
+        self.TextMoveFlag = False
+
 
 
         logging.disable(logging.CRITICAL)
@@ -129,7 +131,7 @@ class Uimaker(tkinter.Frame):
         self.master.bind("<s>",self.selectObject_func)
         self.master.bind("<w>",self.ObjectMove_func)
         self.master.bind("<q>",self.delete_adjoint)
-
+        self.master.bind("<e>",self.infomationObject)
         self.master.bind("<d>",self.Delete_object)        
         
         
@@ -294,19 +296,39 @@ class Uimaker(tkinter.Frame):
         elif(self.func_B1_Motion_mode == "ObjectMove"):
             self.func_B1_mode = ""
             x,y=event.x,event.y
-            x=self.change_justCoordinateX(x,10)
-            y=self.change_justCoordinateY(y,10)
+            x=self.change_justCoordinateX(x,self.minimum_pixelX/2)
+            y=self.change_justCoordinateY(y,self.minimum_pixelY/2)
             Object_coordinate=self.canvas.coords(self.selectObject)
+            adjointBox_coordinate = self.canvas.coords(self.adjointBox_id)
             type=self.canvas.type(self.selectObject)
             if(type == "rectangle" or type == "line" or type == "oval"):
                 dx=Object_coordinate[2]-Object_coordinate[0]
                 dy=Object_coordinate[3]-Object_coordinate[1]
                 self.canvas.coords(self.selectObject,x-dx/2,y-dy/2,x+dx/2,y+dy/2)
                 self.canvas.coords(self.adjointBox_id,(x-dx/2)-2,(y-dy/2)-2,(x+dx/2)+2,(y+dy/2)+2)
+            if(type == "text"):
+                adjoint_x = adjointBox_coordinate[0]
+                adjoint_y = adjointBox_coordinate[1]
+                adjoint_dx=adjointBox_coordinate[2]-adjointBox_coordinate[0]
+                adjoint_dy=adjointBox_coordinate[3]-adjointBox_coordinate[1]
+                if not(self.TextMoveFlag):
+                    self.TextMoveFlag = True
+                    self.MousetoText_dx = Object_coordinate[0] - x  
+                    self.MousetoText_dy = Object_coordinate[1] - y
+                else:
+                    self.canvas.coords(self.selectObject, x+self.MousetoText_dx , y+self.MousetoText_dy)
+                    self.canvas.coords(self.adjointBox_id, x+self.MousetoText_dx-(adjoint_dx/2) , y+self.MousetoText_dy-(adjoint_dy/2), x+self.MousetoText_dx+(adjoint_dx/2) , y+self.MousetoText_dy+(adjoint_dy/2))
+                    
+                
+
+
+
+
 
 #~~~~~~~~~クリックを離すとdrawが呼ばれるようになっている~~~~~~~~~~
 
     def draw(self,event):
+        self.TextMoveFlag = False
         if(self.func_B1_Motion_mode == "preview"):
             if(self.preview_flag==True):
                 self.canvas.delete(self.id)
@@ -348,7 +370,7 @@ class Uimaker(tkinter.Frame):
         self.label_mouse_coordinate.set(coordinate)
 
     def export_xmlfile(self):
-        target_Database=database_manage.Database_manage(r"C:\Users\81909\Documents\python\ui_maker\src\components_test.xml")
+        target_Database=database_manage.Database_manage(r"C:\Users\81909\Documents\GitHub\ui_maker\src\components_test.xml")
         Canvas_data= self.export_canvas_components()
         target_Database.export_Database_as_xml(Canvas_data)
         for i in target_Database.get_UiCode("m5stack"):
@@ -356,7 +378,7 @@ class Uimaker(tkinter.Frame):
 
     def export_canvas_components(self):
         Canvas_data={}
-        self.delete_adjoint()
+        self.delete_adjoint(None)
         for id in self.canvas.find_all():
             component={}
             image=""
@@ -459,7 +481,7 @@ class Uimaker(tkinter.Frame):
                 self.canvas.lower(id)#layer順にオブジェクトを再配置
 
     def delete_adjoint(self,event):
-        self.canvas.delete(self.adjointBox_id)#補助線を消去
+        self.canvas.delete(self.adjointBox_id)#補助線を消去s
 
     def StopFunc_select(self):
         return 0;
