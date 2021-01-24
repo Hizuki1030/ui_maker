@@ -200,7 +200,7 @@ class Uimaker(tkinter.Frame):
         type=self.canvas.type(self.selectObject)
         fill=self.canvas.itemcget(self.selectObject,"fill")
         type=type_attach[type]
-        if(len(fill) >0 ):
+        if(len(fill) >0 and type != "Line"):
             type="fill"+type
         self.parameterApp.makeWindow(self.selectObject,type)
 
